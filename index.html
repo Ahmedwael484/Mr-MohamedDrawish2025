@@ -56,12 +56,12 @@
             backdrop-filter: blur(15px);
             border-radius: 25px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            margin: 40px auto;
-            padding: 30px;
-            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 95%;
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 20px;
             animation: fadeIn 1s ease-in-out;
         }
 
@@ -77,7 +77,7 @@
 
         .navbar {
             background: linear-gradient(90deg, #0288d1 0%, #0277bd 100%);
-            padding: 15px;
+            padding: 10px;
             color: white;
             text-align: center;
             position: sticky;
@@ -86,7 +86,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
@@ -102,12 +103,14 @@
             background: none;
             border: none;
             cursor: pointer;
-            padding: 8px 15px;
+            padding: 8px 12px;
+            font-size: 14px;
+            white-space: nowrap;
         }
 
         .navbar a:hover, .navbar button:hover {
             color: #e3f2fd;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
         .dark-mode .navbar a:hover, .dark-mode .navbar button:hover {
@@ -119,9 +122,10 @@
             background: rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            padding: 30px;
+            padding: 15px;
             transition: transform 0.5s ease, opacity 0.5s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
         }
 
         .dark-mode .section {
@@ -141,8 +145,8 @@
 
         .logo {
             display: block;
-            margin: 0 auto 20px;
-            font-size: 150px;
+            margin: 0 auto 15px;
+            font-size: 120px;
             color: #0288d1;
             text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             transition: color 0.3s ease;
@@ -155,7 +159,7 @@
         h1, h2, p {
             color: #0288d1;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
@@ -166,13 +170,13 @@
         input, select {
             display: block;
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
+            padding: 8px;
+            margin: 8px 0;
             border: 1px solid #bbdefb;
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.9);
             color: #1a237e;
-            font-size: 16px;
+            font-size: 14px;
             transition: border 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -205,15 +209,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 5px;
             width: auto;
-            padding: 8px 15px;
-            margin: 10px 5px;
+            padding: 6px 10px;
+            margin: 5px;
             border: none;
             border-radius: 50%;
             background: linear-gradient(90deg, #0288d1 0%, #0277bd 100%);
             color: white;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
@@ -226,7 +230,7 @@
 
         button:hover {
             background: linear-gradient(90deg, #0277bd 0%, #026aa7 100%);
-            transform: scale(1.1);
+            transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
@@ -241,16 +245,17 @@
 
         .chatbot {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 400px;
+            bottom: 15px;
+            left: 15px;
+            width: 90%;
+            max-width: 400px;
             background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(15px);
             border-radius: 15px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             display: none;
             z-index: 100;
-            padding: 15px;
+            padding: 10px;
         }
 
         .dark-mode .chatbot {
@@ -260,14 +265,15 @@
         .chatbot-header {
             background: linear-gradient(90deg, #0288d1 0%, #0277bd 100%);
             color: white;
-            padding: 10px;
+            padding: 8px;
             border-radius: 10px 10px 0 0;
             font-weight: 700;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
+            font-size: 14px;
         }
 
         .dark-mode .chatbot-header {
@@ -275,11 +281,11 @@
         }
 
         .chatbot-body {
-            padding: 10px;
-            max-height: 250px;
+            padding: 8px;
+            max-height: 200px;
             overflow-y: auto;
             color: #0288d1;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .dark-mode .chatbot-body {
@@ -288,7 +294,7 @@
 
         .chatbot-footer {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: center;
         }
 
@@ -297,8 +303,9 @@
             border: 1px solid #bbdefb;
             color: #1a237e;
             flex: 1;
-            padding: 10px;
+            padding: 6px;
             border-radius: 10px;
+            font-size: 12px;
         }
 
         .dark-mode .chatbot input {
@@ -308,7 +315,7 @@
         }
 
         .question {
-            margin: 15px 0;
+            margin: 10px 0;
             color: #0288d1;
         }
 
@@ -319,14 +326,14 @@
         .question input[type="radio"] {
             width: auto;
             display: inline;
-            margin-left: 10px;
+            margin-left: 5px;
         }
 
         .progress-container {
             width: 100%;
             background: rgba(255, 255, 255, 0.5);
             border-radius: 8px;
-            margin: 10px 0;
+            margin: 8px 0;
             display: none;
         }
 
@@ -335,7 +342,7 @@
         }
 
         .progress-bar {
-            height: 20px;
+            height: 15px;
             background: #0288d1;
             border-radius: 8px;
             width: 0%;
@@ -348,13 +355,13 @@
 
         .social-share {
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0;
         }
 
         .social-share a {
             color: #0288d1;
-            margin: 0 10px;
-            font-size: 24px;
+            margin: 0 8px;
+            font-size: 20px;
             text-decoration: none;
             transition: color 0.3s ease, transform 0.3s ease;
         }
@@ -365,7 +372,7 @@
 
         .social-share a:hover {
             color: #0277bd;
-            transform: scale(1.2);
+            transform: scale(1.1);
         }
 
         .dark-mode .social-share a:hover {
@@ -375,11 +382,12 @@
         .contact-section a {
             color: #0288d1;
             text-decoration: none;
-            margin: 0 10px;
+            margin: 0 8px;
             display: inline-flex;
             align-items: center;
             gap: 5px;
             transition: color 0.3s ease, transform 0.3s ease;
+            font-size: 14px;
         }
 
         .dark-mode .contact-section a {
@@ -388,7 +396,7 @@
 
         .contact-section a:hover {
             color: #0277bd;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
         .dark-mode .contact-section a:hover {
@@ -399,8 +407,9 @@
             background: rgba(255, 255, 255, 0.5);
             backdrop-filter: blur(10px);
             border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
+            padding: 15px;
+            margin-top: 15px;
+            width: 100%;
         }
 
         .dark-mode .chart-container {
@@ -408,10 +417,11 @@
         }
 
         .lessons-section {
-            margin-top: 20px;
+            margin-top: 15px;
             padding: 15px;
             background: rgba(255, 255, 255, 0.5);
             border-radius: 12px;
+            width: 100%;
         }
 
         .dark-mode .lessons-section {
@@ -419,56 +429,145 @@
         }
 
         /* Responsive Design */
-        @media (max-width: 768px) {
+        @media (max-width: 1200px) {
             .glass-container {
-                margin: 10px;
+                margin: 15px;
                 padding: 15px;
             }
-            .chatbot {
-                width: 90%;
-                left: 5%;
-                bottom: 80px;
-            }
             .navbar {
-                flex-wrap: wrap;
-                gap: 10px;
+                gap: 8px;
             }
             .navbar a, .navbar button {
-                margin: 0 10px;
-                font-size: 14px;
+                padding: 6px 10px;
+                font-size: 12px;
             }
             .logo {
                 font-size: 100px;
             }
-            h1, h2 {
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
                 font-size: 1.5rem;
             }
-            button {
-                padding: 6px 12px;
+            input, select {
                 font-size: 12px;
+            }
+            button {
+                padding: 5px 8px;
+                font-size: 10px;
+            }
+            .chatbot {
+                bottom: 10px;
+                left: 10px;
             }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
+            .glass-container {
+                margin: 10px;
+                padding: 10px;
+            }
+            .navbar {
+                flex-direction: column;
+                padding: 8px;
+                gap: 5px;
+            }
             .navbar a, .navbar button {
                 margin: 0 5px;
-                font-size: 12px;
+                font-size: 10px;
+                padding: 4px 8px;
             }
             .logo {
                 font-size: 80px;
             }
-            h1, h2 {
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
                 font-size: 1.2rem;
             }
-            input, button, select {
-                font-size: 14px;
-            }
-            .chatbot {
-                bottom: 60px;
+            input, select {
+                font-size: 10px;
+                padding: 6px;
             }
             button {
-                padding: 5px 10px;
+                padding: 4px 6px;
+                font-size: 8px;
+            }
+            .chatbot {
+                width: 85%;
+                left: 5%;
+                bottom: 5px;
+            }
+            .chatbot-header {
+                font-size: 12px;
+                padding: 6px;
+            }
+            .chatbot-body {
+                max-height: 150px;
                 font-size: 10px;
+            }
+            .chatbot input {
+                font-size: 10px;
+                padding: 4px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .glass-container {
+                margin: 5px;
+                padding: 5px;
+            }
+            .navbar {
+                gap: 3px;
+            }
+            .navbar a, .navbar button {
+                margin: 0 3px;
+                font-size: 8px;
+                padding: 3px 6px;
+            }
+            .logo {
+                font-size: 60px;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+            h2 {
+                font-size: 1rem;
+            }
+            input, select {
+                font-size: 8px;
+                padding: 4px;
+            }
+            button {
+                padding: 3px 5px;
+                font-size: 6px;
+            }
+            .chatbot {
+                width: 80%;
+                left: 10%;
+                bottom: 5px;
+            }
+            .chatbot-header {
+                font-size: 10px;
+                padding: 4px;
+            }
+            .chatbot-body {
+                max-height: 100px;
+                font-size: 8px;
+            }
+            .chatbot input {
+                font-size: 8px;
+                padding: 3px;
+            }
+            .social-share a {
+                font-size: 16px;
+                margin: 0 5px;
+            }
+            .contact-section a {
+                font-size: 12px;
+                margin: 0 5px;
             }
         }
     </style>
@@ -487,7 +586,7 @@
         <div class="section login" id="login">
             <div class="logo">
                 <i class="fas fa-book-open"></i>
-                <i class="fas fa-chalkboard-teacher" style="position: absolute; font-size: 80px; top: 35%; right: 35%; color: #0277bd;"></i>
+                <i class="fas fa-chalkboard-teacher" style="position: absolute; font-size: 60px; top: 35%; right: 35%; color: #0277bd;"></i>
             </div>
             <h1>أ/ محمد درويش<br>Mr. Mohamed Darwish</h1>
             <input type="text" id="username" placeholder="اسم المستخدم">
@@ -584,7 +683,7 @@
             <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
-    <button onclick="toggleChatbot()" style="position: fixed; bottom: 20px; right: 20px; z-index: 100; width: auto; padding: 10px 15px; border-radius: 50%;">
+    <button onclick="toggleChatbot()" style="position: fixed; bottom: 15px; right: 15px; z-index: 100; width: auto; padding: 8px 12px; border-radius: 50%; font-size: 12px;">
         <i class="fas fa-comments"></i>
     </button>
 
@@ -854,10 +953,10 @@
         function loadQuestionList() {
             const questionList = document.getElementById("questionList");
             questionList.innerHTML = questions.map((q, index) => `
-                <div style="background: rgba(255, 255, 255, 0.5); padding: 10px; margin: 5px 0; border-radius: 8px;">
+                <div style="background: rgba(255, 255, 255, 0.5); padding: 8px; margin: 5px 0; border-radius: 8px; font-size: 12px;">
                     <p>${q.questionText} (${q.type === "multiple" ? "اختياري" : "صح/غلط"})</p>
-                    <button onclick="editQuestion(${index})"><i class="fas fa-edit"></i></button>
-                    <button onclick="deleteQuestion(${index})"><i class="fas fa-trash"></i></button>
+                    <button onclick="editQuestion(${index})" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-edit"></i></button>
+                    <button onclick="deleteQuestion(${index})" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-trash"></i></button>
                 </div>
             `).join("");
         }
@@ -900,7 +999,7 @@
             questions.forEach((q, index) => {
                 if (q.type === "multiple") {
                     quizDiv.innerHTML += `
-                        <div class="question">
+                        <div class="question" style="font-size: 12px;">
                             <p>${index + 1}. ${q.questionText}</p>
                             ${q.options.map((opt, i) => `
                                 <input type="radio" name="q${index}" value="${i + 1}"> ${opt}<br>
@@ -909,7 +1008,7 @@
                     `;
                 } else if (q.type === "truefalse") {
                     quizDiv.innerHTML += `
-                        <div class="question">
+                        <div class="question" style="font-size: 12px;">
                             <p>${index + 1}. ${q.questionText}</p>
                             <input type="radio" name="q${index}" value="true"> صح<br>
                             <input type="radio" name="q${index}" value="false"> غلط<br>
@@ -957,7 +1056,7 @@
 
         function loadResults() {
             const resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = results.map(r => `<p>${r.username}: ${r.score}</p>`).join("");
+            resultsDiv.innerHTML = results.map(r => `<p style="font-size: 12px;">${r.username}: ${r.score}</p>`).join("");
         }
 
         function loadResultsChart() {
@@ -984,24 +1083,29 @@
                             title: {
                                 display: true,
                                 text: "الدرجات",
-                                color: "#0288d1"
+                                color: "#0288d1",
+                                font: { size: 12 }
                             },
-                            ticks: { color: "#0288d1" }
+                            ticks: { color: "#0288d1", font: { size: 10 } }
                         },
                         x: {
                             title: {
                                 display: true,
                                 text: "الطلاب",
-                                color: "#0288d1"
+                                color: "#0288d1",
+                                font: { size: 12 }
                             },
-                            ticks: { color: "#0288d1" }
+                            ticks: { color: "#0288d1", font: { size: 10 } }
                         }
                     },
                     plugins: {
                         legend: {
-                            labels: { color: "#0288d1" }
+                            labels: { color: "#0288d1", font: { size: 10 } }
                         }
-                    }
+                    },
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    height: 200
                 }
             });
         }
@@ -1024,7 +1128,7 @@
         async function sendMessage() {
             const input = document.getElementById("chatInput").value.trim();
             const chatbotBody = document.getElementById("chatbotBody");
-            chatbotBody.innerHTML += `<p><b>أنت:</b> ${input}</p>`;
+            chatbotBody.innerHTML += `<p style="font-size: 10px;"><b>أنت:</b> ${input}</p>`;
             try {
                 const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCLcX37lYg-DV0JBWhpV-SAxgclZz3hy1c", {
                     method: "POST",
@@ -1039,9 +1143,9 @@
                 });
                 const data = await response.json();
                 const reply = data.candidates[0].content.parts[0].text;
-                chatbotBody.innerHTML += `<p><b>البوت:</b> ${reply}</p>`;
+                chatbotBody.innerHTML += `<p style="font-size: 10px;"><b>البوت:</b> ${reply}</p>`;
             } catch (error) {
-                chatbotBody.innerHTML += `<p><b>البوت:</b> حدث خطأ، حاول مرة أخرى!</p>`;
+                chatbotBody.innerHTML += `<p style="font-size: 10px;"><b>البوت:</b> حدث خطأ، حاول مرة أخرى!</p>`;
             }
             document.getElementById("chatInput").value = "";
             chatbotBody.scrollTop = chatbotBody.scrollHeight;
@@ -1076,9 +1180,9 @@
         function loadLessonsList() {
             const lessonsList = document.getElementById("lessonsList");
             lessonsList.innerHTML = lessons.map((lesson, index) => `
-                <div style="background: rgba(255, 255, 255, 0.5); padding: 10px; margin: 5px 0; border-radius: 8px;">
+                <div style="background: rgba(255, 255, 255, 0.5); padding: 8px; margin: 5px 0; border-radius: 8px; font-size: 12px;">
                     <p>${lesson.name}</p>
-                    <button onclick="deleteLesson(${index})"><i class="fas fa-trash"></i></button>
+                    <button onclick="deleteLesson(${index})" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-trash"></i></button>
                 </div>
             `).join("");
         }
