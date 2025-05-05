@@ -688,8 +688,10 @@
                 <option value="3">الخيار الثالث</option>
                 <option value="4">الخيار الرابع</option>
             </select>
+            <input type="number" id="multipleQuestionGrade" placeholder="درجة السؤال" min="1">
             <button onclick="addQuestion('multiple')"><i class="fas fa-plus-circle"></i> إضافة سؤال اختياري</button>
             <textarea id="essayQuestionText" placeholder="نص السؤال المقالي" rows="3"></textarea>
+            <input type="number" id="essayQuestionGrade" placeholder="درجة السؤال المقالي" min="1">
             <button onclick="addQuestion('essay')"><i class="fas fa-plus-circle"></i> إضافة سؤال مقالي</button>
             <div id="questionList"></div>
 
@@ -941,6 +943,11 @@
                 });
                 const data = await response.json();
                 const generatedQuestions = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json\n|\n```/g, ""));
+                generatedQuestions.forEach(q => {
+                    if (q.type === "multiple" || q.type === "truefalse") {
+                        q.grade = 5; // درجة افتراضية للأسئلة المولدة
+                    }
+                });
                 questions.push(...generatedQuestions);
                 localStorage.setItem("questions", JSON.stringify(questions));
                 loadQuestionList();
@@ -971,9 +978,10 @@
                     document.getElementById("option4").value.trim()
                 ];
                 const correctAnswer = document.getElementById("correctAnswer").value;
+                const grade = parseInt(document.getElementById("multipleQuestionGrade").value);
 
-                if (questionText && options.every(opt => opt)) {
-                    questions.push({ type: "multiple", questionText, options, correctAnswer });
+                if (questionText && options.every(opt => opt) && grade > 0) {
+                    questions.push({ type: "multiple", questionText, options, correctAnswer, grade });
                     localStorage.setItem("questions", JSON.stringify(questions));
                     loadQuestionList();
                     document.getElementById("questionText").value = '';
@@ -981,6 +989,7 @@
                     document.getElementById("option2").value = '';
                     document.getElementById("option3").value = '';
                     document.getElementById("option4").value = '';
+                    document.getElementById("multipleQuestionGrade").value = '';
                     Swal.fire({
                         title: "نجاح!",
                         text: "تم إضافة السؤال بنجاح!",
@@ -990,18 +999,20 @@
                 } else {
                     Swal.fire({
                         title: "خطأ!",
-                        text: "يرجى ملء جميع الحقول!",
+                        text: "يرجى ملء جميع الحقول وإدخال درجة صحيحة!",
                         icon: "error",
                         confirmButtonColor: "#FFD700"
                     });
                 }
             } else if (type === 'essay') {
                 const questionText = document.getElementById("essayQuestionText").value.trim();
-                if (questionText) {
-                    questions.push({ type: "essay", questionText });
+                const grade = parseInt(document.getElementById("essayQuestionGrade").value);
+                if (questionText && grade > 0) {
+                    questions.push({ type: "essay", questionText, grade });
                     localStorage.setItem("questions", JSON.stringify(questions));
                     loadQuestionList();
                     document.getElementById("essayQuestionText").value = '';
+                    document.getElementById("essayQuestionGrade").value = '';
                     Swal.fire({
                         title: "نجاح!",
                         text: "تم إضافة السؤال المقالي بنجاح!",
@@ -1011,7 +1022,7 @@
                 } else {
                     Swal.fire({
                         title: "خطأ!",
-                        text: "يرجى كتابة نص السؤال المقالي!",
+                        text: "يرجى كتابة نص السؤال المقالي وإدخال درجة صحيحة!",
                         icon: "error",
                         confirmButtonColor: "#FFD700"
                     });
@@ -1026,6 +1037,7 @@
                     <p>${q.questionText} (${q.type === "multiple" ? "اختياري" : "مقالي"})</p>
                     ${q.type === "multiple" ? q.options.map((opt, i) => `<p>خيار ${i + 1}: ${opt}</p>`).join('') : ''}
                     ${q.type === "multiple" ? `<p>الإجابة الصحيحة: ${q.options[parseInt(q.correctAnswer) - 1]}</p>` : ''}
+                    <p>الدرجة: ${q.grade}</p>
                     <button onclick="editQuestion(${index})" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-edit"></i></button>
                     <button onclick="deleteQuestion(${index})" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-trash"></i></button>
                 </div>
@@ -1041,9 +1053,11 @@
                 document.getElementById("option3").value = q.options[2];
                 document.getElementById("option4").value = q.options[3];
                 document.getElementById("correctAnswer").value = q.correctAnswer;
+                document.getElementById("multipleQuestionGrade").value = q.grade;
                 deleteQuestion(index);
             } else if (q.type === "essay") {
                 document.getElementById("essayQuestionText").value = q.questionText;
+                document.getElementById("essayQuestionGrade").value = q.grade;
                 deleteQuestion(index);
             }
         }
@@ -1067,7 +1081,7 @@
                 if (q.type === "multiple") {
                     quizDiv.innerHTML += `
                         <div class="question" style="font-size: 12px;">
-                            <p>${index + 1}. ${q.questionText}</p>
+                            <p>${index + 1}. ${q.questionText} (${q.grade} درجات)</p>
                             ${q.options.map((opt, i) => `
                                 <input type="radio" name="q${index}" value="${i + 1}"> ${opt}<br>
                             `).join("")}
@@ -1076,7 +1090,7 @@
                 } else if (q.type === "essay") {
                     quizDiv.innerHTML += `
                         <div class="question" style="font-size: 12px;">
-                            <p>${index + 1}. ${q.questionText}</p>
+                            <p>${index + 1}. ${q.questionText} (${q.grade} درجات)</p>
                             <textarea id="essayAnswer${index}" placeholder="اكتب إجابتك هنا..." rows="3"></textarea><br>
                         </div>
                     `;
@@ -1088,34 +1102,36 @@
         function submitQuiz() {
             clearInterval(timerInterval); // إيقاف التايمر عند الإرسال
             let score = 0;
-            let totalQuestions = questions.filter(q => q.type === "multiple").length;
+            let totalMultipleChoiceGrade = questions
+                .filter(q => q.type === "multiple")
+                .reduce((sum, q) => sum + q.grade, 0); // مجموع درجات الأسئلة الاختيارية فقط
             let essayAnswers = {};
 
             questions.forEach((q, index) => {
                 if (q.type === "multiple") {
                     const selected = document.querySelector(`input[name="q${index}"]:checked`);
                     if (selected && selected.value === q.correctAnswer) {
-                        score++;
+                        score += q.grade; // إضافة درجة السؤال إذا كانت الإجابة صحيحة
                     }
                 } else if (q.type === "essay") {
                     essayAnswers[`q${index}`] = document.getElementById(`essayAnswer${index}`).value.trim();
-                    totalQuestions--; // لا نحسب الأسئلة المقالية في الدرجة
                 }
             });
 
-            score = (score / totalQuestions) * 100; // حساب الدرجة كنسبة مئوية
+            // تحويل الدرجة إلى نسبة مئوية من 100
+            const percentage = totalMultipleChoiceGrade > 0 ? (score / totalMultipleChoiceGrade) * 100 : 0;
             const username = document.getElementById("username").value;
-            results.push({ username, score: `${score}%` });
+            results.push({ username, score: `${percentage.toFixed(2)}%` });
             localStorage.setItem("results", JSON.stringify(results));
             loadStudentsList(); // تحديث قائمة الطلاب في واجهة الأدمن
 
             let badge = "مبتدئ";
-            if (score >= 95) badge = "متفوق";
-            else if (score >= 90) badge = "متميز";
-            else if (score >= 70) badge = "متقدم";
-            else if (score >= 50) badge = "جيد";
+            if (percentage >= 95) badge = "متفوق";
+            else if (percentage >= 90) badge = "متميز";
+            else if (percentage >= 70) badge = "متقدم";
+            else if (percentage >= 50) badge = "جيد";
 
-            let resultMessage = `حصلت على ${score}%<br>شارة: ${badge}`;
+            let resultMessage = `حصلت على ${score} من ${totalMultipleChoiceGrade} (نسبة: ${percentage.toFixed(2)}%)<br>شارة: ${badge}`;
             if (Object.keys(essayAnswers).length > 0) {
                 resultMessage += "<br>الإجابات المقالية سجلت بنجاح، يرجى مراجعتها مع الأستاذ.";
             }
@@ -1127,7 +1143,7 @@
                 confirmButtonColor: "#FFD700"
             });
             document.getElementById("studentResult").style.display = "block";
-            document.getElementById("studentResult").innerHTML = `نتيجتك: ${score}% (شارة: ${badge})`;
+            document.getElementById("studentResult").innerHTML = `نتيجتك: ${score} من ${totalMultipleChoiceGrade} (نسبة: ${percentage.toFixed(2)}%) (شارة: ${badge})`;
             document.getElementById("submitQuizBtn").style.display = "none";
         }
 
