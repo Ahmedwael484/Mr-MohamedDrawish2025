@@ -86,8 +86,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 20px; /* زيادة المسافة بين الأزرار */
+            flex-wrap: nowrap; /* منع التفاف الأزرار فوق بعضها */
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
@@ -161,7 +161,7 @@
         .logo .teacher-icon {
             font-size: 60px;
             color: #0277bd;
-            margin-right: -30px; /* تعديل المسافة لتجنب التداخل */
+            margin-right: -30px;
         }
 
         .dark-mode .logo {
@@ -315,7 +315,7 @@
         }
 
         .chatbot input {
-            background: rgba(255, 255,  Fleming, 0.9);
+            background: rgba(255, 255, 255, 0.9);
             border: 1px solid #bbdefb;
             color: #1a237e;
             flex: 1;
@@ -451,7 +451,7 @@
                 padding: 15px;
             }
             .navbar {
-                gap: 8px;
+                gap: 15px;
             }
             .navbar a, .navbar button {
                 padding: 6px 10px;
@@ -489,9 +489,7 @@
                 padding: 10px;
             }
             .navbar {
-                flex-direction: column;
-                padding: 8px;
-                gap: 5px;
+                gap: 10px;
             }
             .navbar a, .navbar button {
                 margin: 0 5px;
@@ -544,7 +542,7 @@
                 padding: 5px;
             }
             .navbar {
-                gap: 3px;
+                gap: 5px;
             }
             .navbar a, .navbar button {
                 margin: 0 3px;
@@ -766,22 +764,6 @@
                 ? '<i class="fas fa-sun"></i>'
                 : '<i class="fas fa-moon"></i>';
         }
-
-        function createSnowflakes() {
-            const snowContainer = document.body;
-            for (let i = 0; i < 20; i++) {
-                const snowflake = document.createElement("div");
-                snowflake.className = "snowflake";
-                snowflake.innerHTML = "❄";
-                snowflake.style.left = Math.random() * 100 + "vw";
-                snowflake.style.animationDuration = Math.random() * 8 + 5 + "s";
-                snowflake.style.opacity = Math.random() * 0.5 + 0.5;
-                snowContainer.appendChild(snowflake);
-                snowflake.addEventListener("animationend", () => snowflake.remove());
-            }
-        }
-
-        setInterval(createSnowflakes, 3000);
 
         function login() {
             const username = document.getElementById("username").value.trim();
