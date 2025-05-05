@@ -86,8 +86,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px; /* زيادة المسافة بين الأزرار */
-            flex-wrap: nowrap; /* منع التفاف الأزرار فوق بعضها */
+            gap: 20px;
+            flex-wrap: nowrap;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
@@ -183,7 +183,7 @@
             color: #FFD700;
         }
 
-        input, select {
+        input, select, textarea {
             display: block;
             width: 100%;
             padding: 8px;
@@ -196,28 +196,28 @@
             transition: border 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .dark-mode input, .dark-mode select {
+        .dark-mode input, .dark-mode select, .dark-mode textarea {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid #FFD700;
             color: #FFD700;
         }
 
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             border: 1px solid #0288d1;
             box-shadow: 0 0 8px rgba(2, 136, 209, 0.5);
             outline: none;
         }
 
-        .dark-mode input:focus, .dark-mode select:focus {
+        .dark-mode input:focus, .dark-mode select:focus, .dark-mode textarea:focus {
             border: 1px solid #FFD700;
             box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
         }
 
-        input::placeholder, select {
+        input::placeholder, select, textarea::placeholder {
             color: #666666;
         }
 
-        .dark-mode input::placeholder, .dark-mode select {
+        .dark-mode input::placeholder, .dark-mode select, .dark-mode textarea::placeholder {
             color: #FFD700;
         }
 
@@ -470,7 +470,7 @@
             h2 {
                 font-size: 1.5rem;
             }
-            input, select {
+            input, select, textarea {
                 font-size: 12px;
             }
             button {
@@ -509,7 +509,7 @@
             h2 {
                 font-size: 1.2rem;
             }
-            input, select {
+            input, select, textarea {
                 font-size: 10px;
                 padding: 6px;
             }
@@ -562,7 +562,7 @@
             h2 {
                 font-size: 1rem;
             }
-            input, select {
+            input, select, textarea {
                 font-size: 8px;
                 padding: 4px;
             }
@@ -668,7 +668,9 @@
                 <option value="3">الخيار الثالث</option>
                 <option value="4">الخيار الرابع</option>
             </select>
-            <button onclick="addQuestion()"><i class="fas fa-plus-circle"></i></button>
+            <button onclick="addQuestion('multiple')"><i class="fas fa-plus-circle"></i> إضافة سؤال اختياري</button>
+            <textarea id="essayQuestionText" placeholder="نص السؤال المقالي" rows="3"></textarea>
+            <button onclick="addQuestion('essay')"><i class="fas fa-plus-circle"></i> إضافة سؤال مقالي</button>
             <div id="questionList"></div>
 
             <h3>قسم الدروس</h3>
@@ -677,20 +679,13 @@
                 <button onclick="uploadLesson()"><i class="fas fa-upload"></i></button>
                 <div id="lessonsList"></div>
             </div>
-
-            <h3>نتائج الطلاب</h3>
-            <div id="results"></div>
-            <div class="chart-container">
-                <canvas id="resultsChart"></canvas>
-            </div>
-            <button onclick="toggleResults()"><i class="fas fa-eye"></i></button>
         </div>
 
         <!-- لوحة الطالب -->
         <div class="section student-panel" id="studentPanel" style="display: none;">
             <h2>مرحبًا بالطالب</h2>
             <div id="quiz"></div>
-            <button onclick="submitQuiz()"><i class="fas fa-paper-plane"></i></button>
+            <button onclick="submitQuiz()" id="submitQuizBtn" style="display: none;"><i class="fas fa-paper-plane"></i> إرسال الإجابات</button>
             <div id="studentResult" style="display: none;"></div>
             <div class="social-share">
                 <p>شارك الموقع مع أصدقائك!</p>
@@ -883,6 +878,7 @@
                     progressContainer.style.display = "none";
                     generateQuestionsFromText(textContent);
                 } catch (error) {
+                    console.error("PDF Error:", error);
                     const img = await Tesseract.recognize(file, "ara", {
                         logger: m => {
                             progressBar.style.width = `${m.progress * 100}%`;
@@ -903,7 +899,7 @@
                     body: JSON.stringify({
                         contents: [{
                             parts: [{
-                                text: `Generate 3 multiple-choice questions (each with 4 options and one correct answer) and 2 true/false questions based on the following text:\n${text}\nReturn the questions in JSON format with the structure: [{"type": "multiple", "questionText": "", "options": ["", "", "", ""], "correctAnswer": ""}, {"type": "truefalse", "questionText": "", "correctAnswer": "true/false"}]`
+                                text: `Generate 3 multiple-choice questions (each with 4 options and one correct answer) and 2 true/false questions based on the following Arabic text:\n${text}\nReturn the questions in JSON format with the structure: [{"type": "multiple", "questionText": "", "options": ["", "", "", ""], "correctAnswer": ""}, {"type": "truefalse", "questionText": "", "correctAnswer": "true/false"}]`
                             }]
                         }]
                     })
@@ -920,7 +916,7 @@
                     confirmButtonColor: "#FFD700"
                 });
             } catch (error) {
-                console.error(error);
+                console.error("Generation Error:", error);
                 Swal.fire({
                     title: "خطأ!",
                     text: "حدث خطأ أثناء معالجة الملف أو توليد الأسئلة!",
@@ -930,33 +926,61 @@
             }
         }
 
-        function addQuestion() {
-            const questionText = document.getElementById("questionText").value.trim();
-            const options = [
-                document.getElementById("option1").value.trim(),
-                document.getElementById("option2").value.trim(),
-                document.getElementById("option3").value.trim(),
-                document.getElementById("option4").value.trim()
-            ];
-            const correctAnswer = document.getElementById("correctAnswer").value;
+        function addQuestion(type) {
+            if (type === 'multiple') {
+                const questionText = document.getElementById("questionText").value.trim();
+                const options = [
+                    document.getElementById("option1").value.trim(),
+                    document.getElementById("option2").value.trim(),
+                    document.getElementById("option3").value.trim(),
+                    document.getElementById("option4").value.trim()
+                ];
+                const correctAnswer = document.getElementById("correctAnswer").value;
 
-            if (questionText && options.every(opt => opt)) {
-                questions.push({ type: "multiple", questionText, options, correctAnswer });
-                localStorage.setItem("questions", JSON.stringify(questions));
-                loadQuestionList();
-                Swal.fire({
-                    title: "نجاح!",
-                    text: "تم إضافة السؤال بنجاح!",
-                    icon: "success",
-                    confirmButtonColor: "#FFD700"
-                });
-            } else {
-                Swal.fire({
-                    title: "خطأ!",
-                    text: "يرجى ملء جميع الحقول!",
-                    icon: "error",
-                    confirmButtonColor: "#FFD700"
-                });
+                if (questionText && options.every(opt => opt)) {
+                    questions.push({ type: "multiple", questionText, options, correctAnswer });
+                    localStorage.setItem("questions", JSON.stringify(questions));
+                    loadQuestionList();
+                    document.getElementById("questionText").value = '';
+                    document.getElementById("option1").value = '';
+                    document.getElementById("option2").value = '';
+                    document.getElementById("option3").value = '';
+                    document.getElementById("option4").value = '';
+                    Swal.fire({
+                        title: "نجاح!",
+                        text: "تم إضافة السؤال بنجاح!",
+                        icon: "success",
+                        confirmButtonColor: "#FFD700"
+                    });
+                } else {
+                    Swal.fire({
+                        title: "خطأ!",
+                        text: "يرجى ملء جميع الحقول!",
+                        icon: "error",
+                        confirmButtonColor: "#FFD700"
+                    });
+                }
+            } else if (type === 'essay') {
+                const questionText = document.getElementById("essayQuestionText").value.trim();
+                if (questionText) {
+                    questions.push({ type: "essay", questionText });
+                    localStorage.setItem("questions", JSON.stringify(questions));
+                    loadQuestionList();
+                    document.getElementById("essayQuestionText").value = '';
+                    Swal.fire({
+                        title: "نجاح!",
+                        text: "تم إضافة السؤال المقالي بنجاح!",
+                        icon: "success",
+                        confirmButtonColor: "#FFD700"
+                    });
+                } else {
+                    Swal.fire({
+                        title: "خطأ!",
+                        text: "يرجى كتابة نص السؤال المقالي!",
+                        icon: "error",
+                        confirmButtonColor: "#FFD700"
+                    });
+                }
             }
         }
 
@@ -964,7 +988,9 @@
             const questionList = document.getElementById("questionList");
             questionList.innerHTML = questions.map((q, index) => `
                 <div style="background: rgba(255, 255, 255, 0.5); padding: 8px; margin: 5px 0; border-radius: 8px; font-size: 12px;">
-                    <p>${q.questionText} (${q.type === "multiple" ? "اختياري" : "صح/غلط"})</p>
+                    <p>${q.questionText} (${q.type === "multiple" ? "اختياري" : "مقالي"})</p>
+                    ${q.type === "multiple" ? q.options.map((opt, i) => `<p>خيار ${i + 1}: ${opt}</p>`).join('') : ''}
+                    ${q.type === "multiple" ? `<p>الإجابة الصحيحة: ${q.options[parseInt(q.correctAnswer) - 1]}</p>` : ''}
                     <button onclick="editQuestion(${index})" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-edit"></i></button>
                     <button onclick="deleteQuestion(${index})" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-trash"></i></button>
                 </div>
@@ -981,13 +1007,9 @@
                 document.getElementById("option4").value = q.options[3];
                 document.getElementById("correctAnswer").value = q.correctAnswer;
                 deleteQuestion(index);
-            } else {
-                Swal.fire({
-                    title: "تحذير!",
-                    text: "لا يمكن تعديل أسئلة صح/غلط يدويًا حاليًا!",
-                    icon: "warning",
-                    confirmButtonColor: "#FFD700"
-                });
+            } else if (q.type === "essay") {
+                document.getElementById("essayQuestionText").value = q.questionText;
+                deleteQuestion(index);
             }
         }
 
@@ -1016,52 +1038,60 @@
                             `).join("")}
                         </div>
                     `;
-                } else if (q.type === "truefalse") {
+                } else if (q.type === "essay") {
                     quizDiv.innerHTML += `
                         <div class="question" style="font-size: 12px;">
                             <p>${index + 1}. ${q.questionText}</p>
-                            <input type="radio" name="q${index}" value="true"> صح<br>
-                            <input type="radio" name="q${index}" value="false"> غلط<br>
+                            <textarea id="essayAnswer${index}" placeholder="اكتب إجابتك هنا..." rows="3"></textarea><br>
                         </div>
                     `;
                 }
             });
+            document.getElementById("submitQuizBtn").style.display = "block";
         }
 
         function submitQuiz() {
             let score = 0;
+            let totalQuestions = questions.length;
+            let essayAnswers = {};
+
             questions.forEach((q, index) => {
-                const selected = document.querySelector(`input[name="q${index}"]:checked`);
-                if (selected) {
-                    if (q.type === "multiple" && selected.value === q.correctAnswer) {
-                        score++;
-                    } else if (q.type === "truefalse" && selected.value === q.correctAnswer) {
+                if (q.type === "multiple") {
+                    const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                    if (selected && selected.value === q.correctAnswer) {
                         score++;
                     }
+                } else if (q.type === "essay") {
+                    essayAnswers[`q${index}`] = document.getElementById(`essayAnswer${index}`).value.trim();
+                    totalQuestions--; // لا نحسب الأسئلة المقالية في الدرجة
                 }
             });
+
+            score = (score / totalQuestions) * 100; // حساب الدرجة كنسبة مئوية
             const username = document.getElementById("username").value;
-            results.push({ username, score: `${score}/${questions.length}` });
+            results.push({ username, score: `${score}%` });
             localStorage.setItem("results", JSON.stringify(results));
-            
+
             let badge = "مبتدئ";
-            if (score / questions.length >= 0.95) badge = "متفوق";
-            else if (score / questions.length >= 0.9) badge = "متميز";
-            else if (score / questions.length >= 0.7) badge = "متقدم";
-            else if (score / questions.length >= 0.5) badge = "جيد";
+            if (score >= 95) badge = "متفوق";
+            else if (score >= 90) badge = "متميز";
+            else if (score >= 70) badge = "متقدم";
+            else if (score >= 50) badge = "جيد";
+
+            let resultMessage = `حصلت على ${score}%<br>شارة: ${badge}`;
+            if (Object.keys(essayAnswers).length > 0) {
+                resultMessage += "<br>الإجابات المقالية سجلت بنجاح، يرجى مراجعتها مع الأستاذ.";
+            }
 
             Swal.fire({
                 title: "نتيجتك!",
-                html: `حصلت على ${score} من ${questions.length}<br>شارة: ${badge}`,
+                html: resultMessage,
                 icon: "info",
                 confirmButtonColor: "#FFD700"
             });
-            if (showResults) {
-                document.getElementById("studentResult").style.display = "block";
-                document.getElementById("studentResult").innerHTML = `نتيجتك: ${score} من ${questions.length} (شارة: ${badge})`;
-            }
-            loadResults();
-            loadResultsChart();
+            document.getElementById("studentResult").style.display = "block";
+            document.getElementById("studentResult").innerHTML = `نتيجتك: ${score}% (شارة: ${badge})`;
+            document.getElementById("submitQuizBtn").style.display = "none";
         }
 
         function loadResults() {
@@ -1071,7 +1101,7 @@
 
         function loadResultsChart() {
             const ctx = document.getElementById("resultsChart").getContext("2d");
-            const scores = results.map(r => parseInt(r.score.split("/")[0]));
+            const scores = results.map(r => parseInt(r.score));
             const labels = results.map(r => r.username);
 
             new Chart(ctx, {
