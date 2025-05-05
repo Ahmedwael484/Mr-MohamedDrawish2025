@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="موقع تعليمي تفاعلي لتعليم اللغة العربية مع اختبارات ودروس للأستاذ محمد درويش">
+    <meta name="keywords" content="لغة عربية, اختبارات تفاعلية, دروس لغة عربية, محمد درويش">
+    <meta name="author" content="محمد درويش">
+    <title>موقع الأستاذ محمد درويش</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            direction: rtl;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+            position: relative;
+            animation: glow 5s infinite alternate;
+        }
+
+        body.dark-mode {
+            background: #000000;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 10px rgba(2, 136, 209, 0.3); }
+            100% { box-shadow: 0 0 20px rgba(2, 136, 209, 0.6); }
+        }
+
+        body:after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            margin: 40px auto;
+            padding: 30px;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .dark-mode .glass-container {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #0288d1 0%, #0277bd 100%);
+            padding: 15px;
+            color: white;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-mode .navbar {
+            background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
+        }
+
+        .navbar a, .navbar button {
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s ease, transform 0.3s ease;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px 15px;
+        }
+
+        .navbar a:hover, .navbar button:hover {
+            color: #e3f2fd;
+            transform: scale(1.1);
+        }
+
+        .dark-mode .navbar a:hover, .dark-mode .navbar button:hover {
+            color: #000000;
+        }
+
+        .section {
+            display: none;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .section {
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .section.active {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+            font-size: 150px;
+            color: #0288d1;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode .logo {
+            color: #FFD700;
+        }
+
+        h1, h2, p {
+            color: #0288d1;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .dark-mode h1, .dark-mode h2, .dark-mode p {
+            color: #FFD700;
+        }
+
+        input, select {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #bbdefb;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a237e;
+            font-size: 16px;
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dark-mode input, .dark-mode select {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid #FFD700;
+            color: #FFD700;
+        }
+
+        input:focus, select:focus {
+            border: 1px solid #0288d1;
+            box-shadow: 0 0 8px rgba(2, 136, 209, 0.5);
+            outline: none;
+        }
+
+        .dark-mode input:focus, .dark-mode select:focus {
+            border: 1px solid #FFD700;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+        }
+
+        input::placeholder, select {
+            color: #666666;
+        }
+
+        .dark-mode input::placeholder, .dark-mode select {
+            color: #FFD700;
+        }
+
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: auto;
+            padding: 8px 15px;
+            margin: 10px 5px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(90deg, #0288d1 0%, #0277bd 100%);
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .dark-mode button {
+            background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #0277bd 0%, #026aa7 100%);
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-mode button:hover {
+            background: linear-gradient(90deg, #FFA500 0%, #FF8C00 100%);
+        }
+
+        button:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .chatbot {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 400px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 100;
+            padding: 15px;
+        }
+
+        .dark-mode .chatbot {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .chatbot-header {
+            background: linear-gradient(90deg, #0288d1 0%, #0277bd 100%);
+            color: white;
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .dark-mode .chatbot-header {
+            background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
+        }
+
+        .chatbot-body {
+            padding: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            color: #0288d1;
+            margin-bottom: 10px;
+        }
+
+        .dark-mode .chatbot-body {
+            color: #FFD700;
+        }
+
+        .chatbot-footer {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chatbot input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #bbdefb;
+            color: #1a237e;
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .dark-mode .chatbot input {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid #FFD700;
+            color: #FFD700;
+        }
+
+        .question {
+            margin: 15px 0;
+            color: #0288d1;
+        }
+
+        .dark-mode .question {
+            color: #FFD700;
+        }
+
+        .question input[type="radio"] {
+            width: auto;
+            display: inline;
+            margin-left: 10px;
+        }
+
+        .progress-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .dark-mode .progress-container {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #0288d1;
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .dark-mode .progress-bar {
+            background: #FFD700;
+        }
+
+        .social-share {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .social-share a {
+            color: #0288d1;
+            margin: 0 10px;
+            font-size: 24px;
+            text-decoration: none;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .dark-mode .social-share a {
+            color: #FFD700;
+        }
+
+        .social-share a:hover {
+            color: #0277bd;
+            transform: scale(1.2);
+        }
+
+        .dark-mode .social-share a:hover {
+            color: #FFA500;
+        }
+
+        .contact-section a {
+            color: #0288d1;
+            text-decoration: none;
+            margin: 0 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .dark-mode .contact-section a {
+            color: #FFD700;
+        }
+
+        .contact-section a:hover {
+            color: #0277bd;
+            transform: scale(1.1);
+        }
+
+        .dark-mode .contact-section a:hover {
+            color: #FFA500;
+        }
+
+        .chart-container {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .dark-mode .chart-container {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .lessons-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+        }
+
+        .dark-mode .lessons-section {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .glass-container {
+                margin: 10px;
+                padding: 15px;
+            }
+            .chatbot {
+                width: 90%;
+                left: 5%;
+                bottom: 80px;
+            }
+            .navbar {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            .navbar a, .navbar button {
+                margin: 0 10px;
+                font-size: 14px;
+            }
+            .logo {
+                font-size: 100px;
+            }
+            h1, h2 {
+                font-size: 1.5rem;
+            }
+            button {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar a, .navbar button {
+                margin: 0 5px;
+                font-size: 12px;
+            }
+            .logo {
+                font-size: 80px;
+            }
+            h1, h2 {
+                font-size: 1.2rem;
+            }
+            input, button, select {
+                font-size: 14px;
+            }
+            .chatbot {
+                bottom: 60px;
+            }
+            button {
+                padding: 5px 10px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="#about">عن الأستاذ محمد</a>
+        <a href="#contact">تواصل معنا</a>
+        <button id="loginButton" onclick="showLoginForm()" style="display: block;"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</button>
+        <button id="logoutButton" onclick="logout()" style="display: none;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+        <button id="darkModeToggle" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+    </div>
+
+    <div class="glass-container">
+        <!-- صفحة تسجيل الدخول -->
+        <div class="section login" id="login">
+            <div class="logo">
+                <i class="fas fa-book-open"></i>
+                <i class="fas fa-chalkboard-teacher" style="position: absolute; font-size: 80px; top: 35%; right: 35%; color: #0277bd;"></i>
+            </div>
+            <h1>أ/ محمد درويش<br>Mr. Mohamed Darwish</h1>
+            <input type="text" id="username" placeholder="اسم المستخدم">
+            <input type="password" id="password" placeholder="كلمة المرور">
+            <button onclick="login()"><i class="fas fa-sign-in-alt"></i></button>
+        </div>
+
+        <!-- قسم عن الأستاذ محمد -->
+        <div class="section about-section" id="about">
+            <h2>عن الأستاذ محمد درويش</h2>
+            <p>مدرس لغة عربية في الإسكندرية، يعمل في مدرسة أشرف الخواجة في سموحة.</p>
+        </div>
+
+        <!-- قسم تواصل معنا -->
+        <div class="section contact-section" id="contact">
+            <h2>تواصل معنا</h2>
+            <p>
+                <a href="https://wa.me/+201223338507" target="_blank">
+                    <i class="fab fa-whatsapp"></i> +20 12 23338507
+                </a>
+            </p>
+            <p>
+                <a href="https://www.facebook.com/share/1CBfR21CMc/" target="_blank">
+                    <i class="fab fa-facebook"></i> صفحتنا على الفيسبوك
+                </a>
+            </p>
+        </div>
+
+        <!-- لوحة الأدمن -->
+        <div class="section admin-panel" id="adminPanel" style="display: none;">
+            <h2>لوحة تحكم الأدمن</h2>
+            <h3>إضافة طالب</h3>
+            <input type="text" id="studentUsername" placeholder="اسم المستخدم للطالب">
+            <input type="password" id="studentPassword" placeholder="كلمة المرور للطالب">
+            <button onclick="addStudent()"><i class="fas fa-user-plus"></i></button>
+
+            <h3>رفع ملف PDF</h3>
+            <input type="file" id="pdfFile" accept=".pdf">
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <button onclick="uploadPDF()"><i class="fas fa-upload"></i></button>
+
+            <h3>إدارة الأسئلة</h3>
+            <input type="text" id="questionText" placeholder="نص السؤال">
+            <input type="text" id="option1" placeholder="الخيار الأول">
+            <input type="text" id="option2" placeholder="الخيار الثاني">
+            <input type="text" id="option3" placeholder="الخيار الثالث">
+            <input type="text" id="option4" placeholder="الخيار الرابع">
+            <select id="correctAnswer">
+                <option value="1">الخيار الأول</option>
+                <option value="2">الخيار الثاني</option>
+                <option value="3">الخيار الثالث</option>
+                <option value="4">الخيار الرابع</option>
+            </select>
+            <button onclick="addQuestion()"><i class="fas fa-plus-circle"></i></button>
+            <div id="questionList"></div>
+
+            <h3>قسم الدروس</h3>
+            <div class="lessons-section">
+                <input type="file" id="lessonFile" accept=".pdf,.txt">
+                <button onclick="uploadLesson()"><i class="fas fa-upload"></i></button>
+                <div id="lessonsList"></div>
+            </div>
+
+            <h3>نتائج الطلاب</h3>
+            <div id="results"></div>
+            <div class="chart-container">
+                <canvas id="resultsChart"></canvas>
+            </div>
+            <button onclick="toggleResults()"><i class="fas fa-eye"></i></button>
+        </div>
+
+        <!-- لوحة الطالب -->
+        <div class="section student-panel" id="studentPanel" style="display: none;">
+            <h2>مرحبًا بالطالب</h2>
+            <div id="quiz"></div>
+            <button onclick="submitQuiz()"><i class="fas fa-paper-plane"></i></button>
+            <div id="studentResult" style="display: none;"></div>
+            <div class="social-share">
+                <p>شارك الموقع مع أصدقائك!</p>
+                <a href="https://wa.me/?text=جرب موقع الأستاذ محمد درويش لتعليم اللغة العربية!"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://t.me/share/url?url=موقع الأستاذ محمد درويش&text=جرب موقع تعليمي رائع للغة العربية!"><i class="fab fa-telegram"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشات بوت -->
+    <div class="chatbot" id="chatbot">
+        <div class="chatbot-header"><i class="fas fa-robot"></i> شات بوت الأستاذ محمد</div>
+        <div class="chatbot-body" id="chatbotBody"></div>
+        <div class="chatbot-footer">
+            <input type="text" id="chatInput" placeholder="اكتب سؤالك...">
+            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    <button onclick="toggleChatbot()" style="position: fixed; bottom: 20px; right: 20px; z-index: 100; width: auto; padding: 10px 15px; border-radius: 50%;">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
+        const adminCredentials = { username: "MD@2510", password: "MD@2510" };
+        let students = JSON.parse(localStorage.getItem("students")) || [];
+        let questions = JSON.parse(localStorage.getItem("questions")) || [];
+        let results = JSON.parse(localStorage.getItem("results")) || [];
+        let lessons = JSON.parse(localStorage.getItem("lessons")) || [];
+        let showResults = false;
+        let isLoggedIn = false;
+
+        // إخفاء جميع الأقسام عند التحميل
+        document.querySelectorAll('.section').forEach(section => {
+            section.style.display = 'none';
+        });
+        document.getElementById('login').style.display = 'block';
+
+        // التنقل بين الأقسام
+        document.querySelectorAll('.navbar a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
+                document.getElementById(targetId).style.display = 'block';
+            });
+        });
+
+        // إظهار/إخفاء أزرار تسجيل الدخول والخروج
+        function updateLoginButtons() {
+            const loginButton = document.getElementById('loginButton');
+            const logoutButton = document.getElementById('logoutButton');
+            if (isLoggedIn) {
+                loginButton.style.display = 'none';
+                logoutButton.style.display = 'block';
+            } else {
+                loginButton.style.display = 'block';
+                logoutButton.style.display = 'none';
+            }
+        }
+
+        function showLoginForm() {
+            document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
+            document.getElementById('login').style.display = 'block';
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            const toggleButton = document.getElementById("darkModeToggle");
+            toggleButton.innerHTML = document.body.classList.contains("dark-mode")
+                ? '<i class="fas fa-sun"></i>'
+                : '<i class="fas fa-moon"></i>';
+        }
+
+        function createSnowflakes() {
+            const snowContainer = document.body;
+            for (let i = 0; i < 20; i++) {
+                const snowflake = document.createElement("div");
+                snowflake.className = "snowflake";
+                snowflake.innerHTML = "❄";
+                snowflake.style.left = Math.random() * 100 + "vw";
+                snowflake.style.animationDuration = Math.random() * 8 + 5 + "s";
+                snowflake.style.opacity = Math.random() * 0.5 + 0.5;
+                snowContainer.appendChild(snowflake);
+                snowflake.addEventListener("animationend", () => snowflake.remove());
+            }
+        }
+
+        setInterval(createSnowflakes, 3000);
+
+        function login() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            if (username === adminCredentials.username && password === adminCredentials.password) {
+                document.getElementById("login").style.display = 'none';
+                document.getElementById("adminPanel").style.display = 'block';
+                isLoggedIn = true;
+                updateLoginButtons();
+                Swal.fire({
+                    title: "نجاح!",
+                    text: "تم تسجيل الدخول كأدمن بنجاح!",
+                    icon: "success",
+                    confirmButtonColor: "#FFD700"
+                });
+            } else {
+                const student = students.find(s => s.username === username && s.password === password);
+                if (student) {
+                    document.getElementById("login").style.display = 'none';
+                    document.getElementById("studentPanel").style.display = 'block';
+                    loadQuiz();
+                    isLoggedIn = true;
+                    updateLoginButtons();
+                    Swal.fire({
+                        title: "نجاح!",
+                        text: "تم تسجيل الدخول كطالب بنجاح!",
+                        icon: "success",
+                        confirmButtonColor: "#FFD700"
+                    });
+                } else {
+                    Swal.fire({
+                        title: "خطأ!",
+                        text: "اسم المستخدم أو كلمة المرور غير صحيحة!",
+                        icon: "error",
+                        confirmButtonColor: "#FFD700"
+                    });
+                }
+            }
+        }
+
+        function addStudent() {
+            const username = document.getElementById("studentUsername").value.trim();
+            const password = document.getElementById("studentPassword").value.trim();
+            const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+            const passwordRegex = /^.{6,}$/;
+
+            if (!usernameRegex.test(username)) {
+                Swal.fire({
+                    title: "خطأ!",
+                    text: "اسم المستخدم يجب أن يكون بين 3 و20 حرفًا ويحتوي على أحرف وأرقام فقط!",
+                    icon: "error",
+                    confirmButtonColor: "#FFD700"
+                });
+                return;
+            }
+
+            if (!passwordRegex.test(password)) {
+                Swal.fire({
+                    title: "خطأ!",
+                    text: "كلمة المرور يجب أن تكون 6 أحرف على الأقل!",
+                    icon: "error",
+                    confirmButtonColor: "#FFD700"
+                });
+                return;
+            }
+
+            if (students.some(s => s.username === username)) {
+                Swal.fire({
+                    title: "خطأ!",
+                    text: "اسم المستخدم موجود بالفعل!",
+                    icon: "error",
+                    confirmButtonColor: "#FFD700"
+                });
+                return;
+            }
+
+            students.push({ username, password });
+            localStorage.setItem("students", JSON.stringify(students));
+            Swal.fire({
+                title: "نجاح!",
+                text: "تم إضافة الطالب بنجاح!",
+                icon: "success",
+                confirmButtonColor: "#FFD700"
+            });
+        }
+
+        async function uploadPDF() {
+            const file = document.getElementById("pdfFile").files[0];
+            if (!file) {
+                Swal.fire({
+                    title: "خطأ!",
+                    text: "يرجى اختيار ملف PDF!",
+                    icon: "error",
+                    confirmButtonColor: "#FFD700"
+                });
+                return;
+            }
+
+            const progressContainer = document.getElementById("progressContainer");
+            const progressBar = document.getElementById("progressBar");
+            progressContainer.style.display = "block";
+            progressBar.style.width = "0%";
+
+            const reader = new FileReader();
+            reader.onload = async function () {
+                const typedArray = new Uint8Array(this.result);
+                try {
+                    const pdf = await pdfjsLib.getDocument(typedArray).promise;
+                    let textContent = "";
+                    const totalPages = Math.min(pdf.numPages, 5);
+                    for (let i = 1; i <= totalPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const text = await page.getTextContent();
+                        textContent += text.items.map(item => item.str).join(" ") + "\n";
+                        progressBar.style.width = `${(i / totalPages) * 100}%`;
+                    }
+                    progressContainer.style.display = "none";
+                    generateQuestionsFromText(textContent);
+                } catch (error) {
+                    const img = await Tesseract.recognize(file, "ara", {
+                        logger: m => {
+                            progressBar.style.width = `${m.progress * 100}%`;
+                        }
+                    });
+                    progressContainer.style.display = "none";
+                    generateQuestionsFromText(img.data.text);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        async function generateQuestionsFromText(text) {
+            try {
+                const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCLcX37lYg-DV0JBWhpV-SAxgclZz3hy1c", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `Generate 3 multiple-choice questions (each with 4 options and one correct answer) and 2 true/false questions based on the following text:\n${text}\nReturn the questions in JSON format with the structure: [{"type": "multiple", "questionText": "", "options": ["", "", "", ""], "correctAnswer": ""}, {"type": "truefalse", "questionText": "", "correctAnswer": "true/false"}]`
+                            }]
+                        }]
+                    })
+                });
+                const data = await response.json();
+                const generatedQuestions = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json\n|\n```/g, ""));
+                questions.push(...generatedQuestions);
+                localStorage.setItem("questions", JSON.stringify(questions));
+                loadQuestionList();
+                Swal.fire({
+                    title: "نجاح!",
+                    text: "تم استخراج النصوص وتوليد الأسئلة بنجاح!",
+                    icon: "success",
+                    confirmButtonColor: "#FFD700"
+                });
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    title: "خطأ!",
+                    text: "حدث خطأ أثناء معالجة الملف أو توليد الأسئلة!",
+                    icon: "error",
+                    confirmButtonColor: "#FFD700"
+                });
+            }
+        }
+
+        function addQuestion() {
+            const questionText = document.getElementById("questionText").value.trim();
+            const options = [
+                document.getElementById("option1").value.trim(),
+                document.getElementById("option2").value.trim(),
+                document.getElementById("option3").value.trim(),
+                document.getElementById("option4").value.trim()
+            ];
+            const correctAnswer = document.getElementById("correctAnswer").value;
+
+            if (questionText && options.every(opt => opt)) {
+                questions.push({ type: "multiple", questionText, options, correctAnswer });
+                localStorage.setItem("questions", JSON.stringify(questions));
+                loadQuestionList();
+                Swal.fire({
+                    title: "نجاح!",
+                    text: "تم إضافة السؤال بنجاح!",
+                    icon: "success",
+                    confirmButtonColor: "#FFD700"
+                });
+            } else {
+                Swal.fire({
+                    title: "خطأ!",
+                    text: "يرجى ملء جميع الحقول!",
+                    icon: "error",
+                    confirmButtonColor: "#FFD700"
+                });
+            }
+        }
+
+        function loadQuestionList() {
+            const questionList = document.getElementById("questionList");
+            questionList.innerHTML = questions.map((q, index) => `
+                <div style="background: rgba(255, 255, 255, 0.5); padding: 10px; margin: 5px 0; border-radius: 8px;">
+                    <p>${q.questionText} (${q.type === "multiple" ? "اختياري" : "صح/غلط"})</p>
+                    <button onclick="editQuestion(${index})"><i class="fas fa-edit"></i></button>
+                    <button onclick="deleteQuestion(${index})"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join("");
+        }
+
+        function editQuestion(index) {
+            const q = questions[index];
+            if (q.type === "multiple") {
+                document.getElementById("questionText").value = q.questionText;
+                document.getElementById("option1").value = q.options[0];
+                document.getElementById("option2").value = q.options[1];
+                document.getElementById("option3").value = q.options[2];
+                document.getElementById("option4").value = q.options[3];
+                document.getElementById("correctAnswer").value = q.correctAnswer;
+                deleteQuestion(index);
+            } else {
+                Swal.fire({
+                    title: "تحذير!",
+                    text: "لا يمكن تعديل أسئلة صح/غلط يدويًا حاليًا!",
+                    icon: "warning",
+                    confirmButtonColor: "#FFD700"
+                });
+            }
+        }
+
+        function deleteQuestion(index) {
+            questions.splice(index, 1);
+            localStorage.setItem("questions", JSON.stringify(questions));
+            loadQuestionList();
+            Swal.fire({
+                title: "نجاح!",
+                text: "تم حذف السؤال بنجاح!",
+                icon: "success",
+                confirmButtonColor: "#FFD700"
+            });
+        }
+
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            quizDiv.innerHTML = "";
+            questions.forEach((q, index) => {
+                if (q.type === "multiple") {
+                    quizDiv.innerHTML += `
+                        <div class="question">
+                            <p>${index + 1}. ${q.questionText}</p>
+                            ${q.options.map((opt, i) => `
+                                <input type="radio" name="q${index}" value="${i + 1}"> ${opt}<br>
+                            `).join("")}
+                        </div>
+                    `;
+                } else if (q.type === "truefalse") {
+                    quizDiv.innerHTML += `
+                        <div class="question">
+                            <p>${index + 1}. ${q.questionText}</p>
+                            <input type="radio" name="q${index}" value="true"> صح<br>
+                            <input type="radio" name="q${index}" value="false"> غلط<br>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function submitQuiz() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected) {
+                    if (q.type === "multiple" && selected.value === q.correctAnswer) {
+                        score++;
+                    } else if (q.type === "truefalse" && selected.value === q.correctAnswer) {
+                        score++;
+                    }
+                }
+            });
+            const username = document.getElementById("username").value;
+            results.push({ username, score: `${score}/${questions.length}` });
+            localStorage.setItem("results", JSON.stringify(results));
+            
+            let badge = "مبتدئ";
+            if (score / questions.length >= 0.95) badge = "متفوق";
+            else if (score / questions.length >= 0.9) badge = "متميز";
+            else if (score / questions.length >= 0.7) badge = "متقدم";
+            else if (score / questions.length >= 0.5) badge = "جيد";
+
+            Swal.fire({
+                title: "نتيجتك!",
+                html: `حصلت على ${score} من ${questions.length}<br>شارة: ${badge}`,
+                icon: "info",
+                confirmButtonColor: "#FFD700"
+            });
+            if (showResults) {
+                document.getElementById("studentResult").style.display = "block";
+                document.getElementById("studentResult").innerHTML = `نتيجتك: ${score} من ${questions.length} (شارة: ${badge})`;
+            }
+            loadResults();
+            loadResultsChart();
+        }
+
+        function loadResults() {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = results.map(r => `<p>${r.username}: ${r.score}</p>`).join("");
+        }
+
+        function loadResultsChart() {
+            const ctx = document.getElementById("resultsChart").getContext("2d");
+            const scores = results.map(r => parseInt(r.score.split("/")[0]));
+            const labels = results.map(r => r.username);
+
+            new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "درجات الطلاب",
+                        data: scores,
+                        backgroundColor: "rgba(2, 136, 209, 0.7)",
+                        borderColor: "rgba(2, 136, 209, 1)",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: "الدرجات",
+                                color: "#0288d1"
+                            },
+                            ticks: { color: "#0288d1" }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: "الطلاب",
+                                color: "#0288d1"
+                            },
+                            ticks: { color: "#0288d1" }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: { color: "#0288d1" }
+                        }
+                    }
+                }
+            });
+        }
+
+        function toggleResults() {
+            showResults = !showResults;
+            Swal.fire({
+                title: "تم!",
+                text: showResults ? "النتائج الآن مرئية للطلاب" : "النتائج الآن مخفية عن الطلاب",
+                icon: "info",
+                confirmButtonColor: "#FFD700"
+            });
+        }
+
+        function toggleChatbot() {
+            const chatbot = document.getElementById("chatbot");
+            chatbot.style.display = chatbot.style.display === "none" ? "block" : "none";
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById("chatInput").value.trim();
+            const chatbotBody = document.getElementById("chatbotBody");
+            chatbotBody.innerHTML += `<p><b>أنت:</b> ${input}</p>`;
+            try {
+                const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCLcX37lYg-DV0JBWhpV-SAxgclZz3hy1c", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `أجب كمعلم لغة عربية: ${input}`
+                            }]
+                        }]
+                    })
+                });
+                const data = await response.json();
+                const reply = data.candidates[0].content.parts[0].text;
+                chatbotBody.innerHTML += `<p><b>البوت:</b> ${reply}</p>`;
+            } catch (error) {
+                chatbotBody.innerHTML += `<p><b>البوت:</b> حدث خطأ، حاول مرة أخرى!</p>`;
+            }
+            document.getElementById("chatInput").value = "";
+            chatbotBody.scrollTop = chatbotBody.scrollHeight;
+        }
+
+        function uploadLesson() {
+            const file = document.getElementById("lessonFile").files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    lessons.push({ name: file.name, content: e.target.result });
+                    localStorage.setItem("lessons", JSON.stringify(lessons));
+                    loadLessonsList();
+                    Swal.fire({
+                        title: "نجاح!",
+                        text: "تم رفع الدرس بنجاح!",
+                        icon: "success",
+                        confirmButtonColor: "#FFD700"
+                    });
+                };
+                reader.readAsDataURL(file);
+            } else {
+                Swal.fire({
+                    title: "خطأ!",
+                    text: "يرجى اختيار ملف!",
+                    icon: "error",
+                    confirmButtonColor: "#FFD700"
+                });
+            }
+        }
+
+        function loadLessonsList() {
+            const lessonsList = document.getElementById("lessonsList");
+            lessonsList.innerHTML = lessons.map((lesson, index) => `
+                <div style="background: rgba(255, 255, 255, 0.5); padding: 10px; margin: 5px 0; border-radius: 8px;">
+                    <p>${lesson.name}</p>
+                    <button onclick="deleteLesson(${index})"><i class="fas fa-trash"></i></button>
+                </div>
+            `).join("");
+        }
+
+        function deleteLesson(index) {
+            lessons.splice(index, 1);
+            localStorage.setItem("lessons", JSON.stringify(lessons));
+            loadLessonsList();
+            Swal.fire({
+                title: "نجاح!",
+                text: "تم حذف الدرس بنجاح!",
+                icon: "success",
+                confirmButtonColor: "#FFD700"
+            });
+        }
+
+        function logout() {
+            document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
+            document.getElementById('login').style.display = 'block';
+            isLoggedIn = false;
+            updateLoginButtons();
+            Swal.fire({
+                title: "نجاح!",
+                text: "تم تسجيل الخروج بنجاح!",
+                icon: "success",
+                confirmButtonColor: "#FFD700"
+            });
+        }
+
+        // تحديث الأزرار عند تحميل الصفحة
+        updateLoginButtons();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+</body>
+</html>
