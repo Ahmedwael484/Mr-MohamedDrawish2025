@@ -1,1302 +1,1558 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="موقع تعليمي تفاعلي لتعليم اللغة العربية مع اختبارات ودروس للأستاذ محمد درويش">
-    <meta name="keywords" content="لغة عربية, اختبارات تفاعلية, دروس لغة عربية, محمد درويش">
-    <meta name="author" content="محمد درويش">
-    <title>موقع الأستاذ محمد درويش</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/tesseract.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <title>منصة الأستاذ محمد درويش التعليمية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Cairo', sans-serif;
-        }
-
         body {
-            direction: rtl;
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            overflow-x: hidden;
-            transition: background 0.5s ease;
-            position: relative;
-            animation: glow 5s infinite alternate;
+            font-family: 'Cairo', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark {
+            --tw-bg-opacity: 1;
+            background-color: rgb(17 24 39 / var(--tw-bg-opacity)); /* bg-gray-900 */
+            color: rgb(209 213 219 / var(--tw-bg-opacity)); /* text-gray-300 */
+        }
+        .dark .bg-white {
+            --tw-bg-opacity: 1;
+            background-color: rgb(31 41 55 / var(--tw-bg-opacity)); /* bg-gray-800 */
+        }
+        .dark .text-gray-800 {
+            color: rgb(229 231 235 / var(--tw-bg-opacity)); /* text-gray-200 */
+        }
+        .dark .text-gray-600, .dark .text-gray-500 {
+            color: rgb(156 163 175 / var(--tw-bg-opacity)); /* text-gray-400 */
+        }
+        .dark .border-gray-300 {
+            border-color: rgb(75 85 99 / var(--tw-bg-opacity)); /* border-gray-600 */
+        }
+        .dark .hover\:bg-gray-100:hover {
+            --tw-bg-opacity: 1;
+            background-color: rgb(55 65 81 / var(--tw-bg-opacity)); /* hover:bg-gray-700 */
+        }
+        .dark input, .dark select, .dark textarea {
+            background-color: rgb(55 65 81 / var(--tw-bg-opacity)); /* bg-gray-700 */
+            color: rgb(229 231 235 / var(--tw-bg-opacity)); /* text-gray-200 */
+            border-color: rgb(75 85 99 / var(--tw-bg-opacity)); /* border-gray-600 */
+        }
+        .dark button.bg-blue-600 { background-color: rgb(37 99 235); }
+        .dark button.bg-blue-600:hover { background-color: rgb(29 78 216); }
+        .dark button.bg-green-500 { background-color: rgb(34 197 94); }
+        .dark button.bg-green-500:hover { background-color: rgb(22 163 74); }
+        .dark button.bg-red-500 { background-color: rgb(239 68 68); }
+        .dark button.bg-red-500:hover { background-color: rgb(220 38 38); }
+        .dark button.bg-yellow-500 { background-color: rgb(234 179 8); }
+        .dark button.bg-yellow-500:hover { background-color: rgb(202 138 4); }
+        .dark .bg-gray-50 { background-color: rgb(55 65 81 / 0.7); } /* Adjusted for cards in dark mode */
+        .dark .bg-gray-200 { background-color: rgb(55 65 81); } /* bg-gray-700 for table head */
+
+
+        .hidden { display: none !important; } /* Use !important to ensure override if needed during transitions */
+        
+        /* Modal Base Styles */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+            transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+            opacity: 0;
+            visibility: hidden;
+        }
+        .modal:not(.hidden) { /* When modal is to be shown */
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            min-width: 300px; max-width: 90%;
+            transition: transform 0.3s ease-out;
+            transform: scale(0.95) translateY(10px);
+        }
+        .modal:not(.hidden) .modal-content {
+             transform: scale(1) translateY(0);
         }
 
-        body.dark-mode {
-            background: #000000;
-        }
 
-        @keyframes glow {
-            0% { box-shadow: 0 0 10px rgba(2, 136, 209, 0.3); }
-            100% { box-shadow: 0 0 20px rgba(2, 136, 209, 0.6); }
+        /* Page and Section Transitions */
+        .page-container, .admin-section, .student-section {
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
         }
-
-        body:after {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
+        .page-container.hidden, .admin-section.hidden, .student-section.hidden {
+            opacity: 0;
+            transform: translateY(15px);
             pointer-events: none;
-            z-index: -1;
         }
+         /* Visible state is implicitly opacity:1, transform:translateY(0) */
 
-        .glass-container {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(15px);
-            border-radius: 25px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            margin: 20px auto;
-            padding: 20px;
-            max-width: 95%;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            animation: fadeIn 1s ease-in-out;
-        }
 
-        .dark-mode .glass-container {
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .navbar {
-            background: linear-gradient(90deg, #0288d1 0%, #0277bd 100%);
-            padding: 10px;
-            color: white;
+        /* Enhanced Button Styles */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 9999px; /* Pill shape */
+            font-weight: 600;
             text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: nowrap;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .dark-mode .navbar {
-            background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
-        }
-
-        .navbar a, .navbar button {
-            color: white;
-            text-decoration: none;
-            font-weight: 700;
-            transition: color 0.3s ease, transform 0.3s ease;
-            background: none;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             border: none;
             cursor: pointer;
-            padding: 8px 12px;
-            font-size: 14px;
-            white-space: nowrap;
         }
-
-        .navbar a:hover, .navbar button:hover {
-            color: #e3f2fd;
-            transform: scale(1.05);
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
-
-        .dark-mode .navbar a:hover, .dark-mode .navbar button:hover {
-            color: #000000;
+        .btn:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        .section {
-            display: none;
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 15px;
-            transition: transform 0.5s ease, opacity 0.5s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
-        }
-
-        .dark-mode .section {
-            background: rgba(0, 0, 0, 0.8);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
-        }
-
-        .section.active {
-            display: block;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            0% { transform: translateY(20px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
-        .logo {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            margin: 0 auto 15px;
-            color: #0288d1;
-            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: color 0.3s ease;
-        }
-
-        .logo .book-icon {
-            font-size: 120px;
-        }
-
-        .logo .teacher-icon {
-            font-size: 60px;
-            color: #0277bd;
-            margin-right: -30px;
-        }
-
-        .dark-mode .logo {
-            color: #FFD700;
-        }
-
-        .dark-mode .logo .teacher-icon {
-            color: #FFA500;
-        }
-
-        h1, h2, p {
-            color: #0288d1;
-            text-align: center;
-            margin-bottom: 15px;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .dark-mode h1, .dark-mode h2, .dark-mode p {
-            color: #FFD700;
-        }
-
-        input, select, textarea {
-            display: block;
-            width: 100%;
-            padding: 8px;
-            margin: 8px 0;
-            border: 1px solid #bbdefb;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #1a237e;
-            font-size: 14px;
-            transition: border 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .dark-mode input, .dark-mode select, .dark-mode textarea {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid #FFD700;
-            color: #FFD700;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border: 1px solid #0288d1;
-            box-shadow: 0 0 8px rgba(2, 136, 209, 0.5);
-            outline: none;
-        }
-
-        .dark-mode input:focus, .dark-mode select:focus, .dark-mode textarea:focus {
-            border: 1px solid #FFD700;
-            box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-        }
-
-        input::placeholder, select, textarea::placeholder {
-            color: #666666;
-        }
-
-        .dark-mode input::placeholder, .dark-mode select, .dark-mode textarea::placeholder {
-            color: #FFD700;
-        }
-
-        button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            width: auto;
-            padding: 6px 10px;
-            margin: 5px;
-            border: none;
+        .btn-primary { background-color: #2563EB; color: white; } /* blue-600 */
+        .btn-primary:hover { background-color: #1D4ED8; } /* blue-700 */
+        .btn-secondary { background-color: #4B5563; color: white; } /* gray-700 */
+        .btn-secondary:hover { background-color: #374151; } /* gray-800 */
+        .btn-success { background-color: #10B981; color: white; } /* green-500 */
+        .btn-success:hover { background-color: #059669; } /* green-600 */
+        .btn-danger { background-color: #EF4444; color: white; } /* red-500 */
+        .btn-danger:hover { background-color: #DC2626; } /* red-600 */
+        .btn-warning { background-color: #F59E0B; color: white; } /* amber-500 */
+        .btn-warning:hover { background-color: #D97706; } /* amber-600 */
+        
+        .btn-icon {
+            padding: 0.5rem;
+            width: 2.5rem; /* 40px */
+            height: 2.5rem; /* 40px */
             border-radius: 50%;
-            background: linear-gradient(90deg, #0288d1 0%, #0277bd 100%);
-            color: white;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .dark-mode button {
-            background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
-        }
-
-        button:hover {
-            background: linear-gradient(90deg, #0277bd 0%, #026aa7 100%);
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .dark-mode button:hover {
-            background: linear-gradient(90deg, #FFA500 0%, #FF8C00 100%);
-        }
-
-        button:active {
-            transform: scale(0.95);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .chatbot {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            width: 90%;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(15px);
-            border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            display: none;
-            z-index: 100;
-            padding: 10px;
-        }
-
-        .dark-mode .chatbot {
-            background: rgba(0, 0, 0, 0.9);
-        }
-
-        .chatbot-header {
-            background: linear-gradient(90deg, #0288d1 0%, #0277bd 100%);
-            color: white;
-            padding: 8px;
-            border-radius: 10px 10px 0 0;
-            font-weight: 700;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 14px;
-        }
-
-        .dark-mode .chatbot-header {
-            background: linear-gradient(90deg, #FFD700 0%, #FFA500 100%);
-        }
-
-        .chatbot-body {
-            padding: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            color: #0288d1;
-            margin-bottom: 8px;
-        }
-
-        .dark-mode .chatbot-body {
-            color: #FFD700;
-        }
-
-        .chatbot-footer {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .chatbot input {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #bbdefb;
-            color: #1a237e;
-            flex: 1;
-            padding: 6px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
-
-        .dark-mode .chatbot input {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid #FFD700;
-            color: #FFD700;
-        }
-
-        .question {
-            margin: 10px 0;
-            color: #0288d1;
-        }
-
-        .dark-mode .question {
-            color: #FFD700;
-        }
-
-        .question input[type="radio"] {
-            width: auto;
-            display: inline;
-            margin-left: 5px;
-        }
-
-        .progress-container {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
-            margin: 8px 0;
-            display: none;
-        }
-
-        .dark-mode .progress-container {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .progress-bar {
-            height: 15px;
-            background: #0288d1;
-            border-radius: 8px;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .dark-mode .progress-bar {
-            background: #FFD700;
-        }
-
-        .timer {
-            text-align: center;
-            font-size: 20px;
-            color: #0288d1;
-            margin: 10px 0;
-        }
-
-        .dark-mode .timer {
-            color: #FFD700;
-        }
-
-        .social-share {
-            text-align: center;
-            margin: 15px 0;
-        }
-
-        .social-share a {
-            color: #0288d1;
-            margin: 0 8px;
-            font-size: 20px;
-            text-decoration: none;
-            transition: color 0.3s ease, transform 0.3s ease;
-        }
-
-        .dark-mode .social-share a {
-            color: #FFD700;
-        }
-
-        .social-share a:hover {
-            color: #0277bd;
-            transform: scale(1.1);
-        }
-
-        .dark-mode .social-share a:hover {
-            color: #FFA500;
-        }
-
-        .contact-section a {
-            color: #0288d1;
-            text-decoration: none;
-            margin: 0 8px;
             display: inline-flex;
+            justify-content: center;
             align-items: center;
-            gap: 5px;
-            transition: color 0.3s ease, transform 0.3s ease;
-            font-size: 14px;
+        }
+        .btn-icon svg { width: 1.25rem; height: 1.25rem; } /* 20px */
+
+        /* Table Action Buttons */
+        .btn-action-table {
+            padding: 0.3rem 0.8rem; /* Adjusted padding */
+            border-radius: 0.375rem; /* rounded-md */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid transparent;
+            margin: 0 0.125rem; /* Added small margin */
+        }
+        .btn-action-table:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        .btn-action-table.edit {
+            background-color: #EFF6FF; color: #3B82F6; border-color: #BFDBFE;
+        }
+        .btn-action-table.edit:hover { background-color: #DBEAFE; color: #2563EB; }
+        .dark .btn-action-table.edit { background-color: rgba(59, 130, 246, 0.2); color: #93C5FD; border-color: rgba(59, 130, 246, 0.4); }
+        .dark .btn-action-table.edit:hover { background-color: rgba(59, 130, 246, 0.3); color: #BFDBFE; }
+
+        .btn-action-table.delete {
+            background-color: #FEF2F2; color: #EF4444; border-color: #FECACA;
+        }
+        .btn-action-table.delete:hover { background-color: #FEE2E2; color: #DC2626; }
+        .dark .btn-action-table.delete { background-color: rgba(239, 68, 68, 0.2); color: #F87171; border-color: rgba(239, 68, 68, 0.4); }
+        .dark .btn-action-table.delete:hover { background-color: rgba(239, 68, 68, 0.3); color: #FCA5A5; }
+        
+        .btn-action-table.preview {
+            background-color: #F0FDF4; color: #22C55E; border-color: #BBF7D0;
+        }
+        .btn-action-table.preview:hover { background-color: #DCFCE7; color: #16A34A; }
+        .dark .btn-action-table.preview { background-color: rgba(34, 197, 94, 0.2); color: #4ADE80; border-color: rgba(34, 197, 94, 0.4); }
+        .dark .btn-action-table.preview:hover { background-color: rgba(34, 197, 94, 0.3); color: #86EFAC; }
+
+
+        /* Profile Picture Styles */
+        .profile-pic-container {
+            position: relative; width: 120px; height: 120px; border-radius: 50%;
+            background-color: #E5E7EB; margin: 1rem auto; cursor: pointer;
+            overflow: hidden; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .dark .profile-pic-container { background-color: #4B5563; border-color: #374151; }
+        #profileImagePreview { width: 100%; height: 100%; object-fit: cover; }
+        .profile-pic-edit-icon {
+            position: absolute; bottom: 5px; right: 5px; background-color: rgba(0,0,0,0.6);
+            color: white; border-radius: 50%; padding: 6px; display: flex;
+            align-items: center; justify-content: center; transition: background-color 0.2s;
+        }
+        .profile-pic-edit-icon:hover { background-color: rgba(0,0,0,0.8); }
+        .profile-pic-edit-icon svg { width: 16px; height: 16px; }
+        #deleteProfilePicBtn {
+            position: absolute; top: 5px; right: 5px; background-color: rgba(239, 68, 68, 0.7);
+            color: white; border-radius: 50%; padding: 4px; width: 24px; height: 24px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: background-color 0.2s; z-index: 10;
+        }
+        #deleteProfilePicBtn:hover { background-color: rgba(220, 38, 38, 1); }
+        #deleteProfilePicBtn svg { width: 14px; height: 14px; }
+
+        /* Chatbot Styles */
+        .chatbot-icon {
+            position: fixed; bottom: 20px; left: 20px;
+            background-color: #1D4ED8; color: white; width: 60px; height: 60px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 999;
+            transition: transform 0.2s ease-in-out, background-color 0.2s;
+        }
+        .chatbot-icon:hover { transform: scale(1.1); background-color: #2563EB; }
+        .chatbot-icon svg { width: 30px; height: 30px; }
+
+        .chatbot-window {
+            position: fixed; bottom: 90px; left: 20px;
+            width: 350px; height: 450px; background-color: white;
+            border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; overflow: hidden; z-index: 998;
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s ease-out;
+            opacity: 0; transform: translateY(20px) scale(0.95); visibility: hidden;
+        }
+         .chatbot-window:not(.hidden) { /* When chatbot window is to be shown */
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            visibility: visible;
+        }
+        .dark .chatbot-window { background-color: rgb(31 41 55); }
+        .chatbot-header {
+            background: linear-gradient(135deg, #2563EB, #1D4ED8);
+            color: white; padding: 12px 15px; text-align: center; font-weight: bold;
+            border-top-left-radius: 15px; border-top-right-radius: 15px;
+        }
+        .chatbot-messages {
+            flex-grow: 1; padding: 15px; overflow-y: auto; display: flex;
+            flex-direction: column; gap: 10px;
+        }
+        .chatbot-input {
+            display: flex; padding: 10px; border-top: 1px solid #E5E7EB;
+            background-color: #F9FAFB;
+        }
+        .dark .chatbot-input { border-top-color: rgb(55 65 81); background-color: rgb(55 65 81); }
+        .chatbot-input input {
+            flex-grow: 1; padding: 10px; border: 1px solid #D1D5DB;
+            border-radius: 20px; margin-left: 8px; outline: none;
+        }
+        .dark .chatbot-input input { background-color: rgb(75 85 99); border-color: rgb(75 85 99); color: white; }
+        .chatbot-input button {
+            padding: 10px 15px; background-color: #1D4ED8;
+            color: white; border: none; border-radius: 20px; cursor: pointer;
+            font-weight: 600; transition: background-color 0.2s;
+        }
+        .chatbot-input button:hover { background-color: #2563EB; }
+
+        .message { padding: 10px 15px; border-radius: 18px; max-width: 75%; word-wrap: break-word; line-height: 1.4; }
+        .user-message {
+            background-color: #DBEAFE; color: #1E3A8A;
+            align-self: flex-end; border-bottom-right-radius: 5px;
+        }
+        .dark .user-message { background-color: #3B82F6; color: white; }
+        .bot-message {
+            background-color: #E5E7EB; color: #374151;
+            align-self: flex-start; border-bottom-left-radius: 5px;
+        }
+        .dark .bot-message { background-color: rgb(55 65 81); color: rgb(209 213 219); }
+        
+        .message-enter {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: messageEnterAnimation 0.3s ease-out forwards;
+        }
+        @keyframes messageEnterAnimation {
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .dark-mode .contact-section a {
-            color: #FFD700;
+        /* Nav Link Styles */
+        .admin-nav-link, .student-nav-link {
+            padding: 0.6rem 1rem; /* Increased padding slightly */
+            border-radius: 8px;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s, font-weight 0.2s;
+            border-bottom-width: 3px; /* Base border width */
+        }
+        /* Active Nav Link Style */
+        .admin-nav-link.admin-nav-active {
+            font-weight: 700; /* bolder */
+            color: #1D4ED8 !important; /* blue-700 */
+            border-color: #2563EB !important; /* blue-600 */
+            background-color: rgba(59, 130, 246, 0.1); 
+        }
+        .dark .admin-nav-link.admin-nav-active {
+            color: #60A5FA !important; /* blue-400 */
+            border-color: #3B82F6 !important; /* blue-500 */
+            background-color: rgba(59, 130, 246, 0.2);
+        }
+        .student-nav-link.student-nav-active {
+            font-weight: 700;
+            color: #059669 !important; /* green-600 */
+            border-color: #10B981 !important; /* green-500 */
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        .dark .student-nav-link.student-nav-active {
+            color: #34D399 !important; /* green-400 */
+            border-color: #10B981 !important; /* green-500 */
+            background-color: rgba(16, 185, 129, 0.2);
         }
 
-        .contact-section a:hover {
-            color: #0277bd;
-            transform: scale(1.05);
+        /* Dark Mode Toggle Button Styling */
+        #darkModeToggle {
+            background-color: #F9FAFB; /* gray-50 */
+            color: #374151; /* gray-700 */
+            border: 1px solid #D1D5DB; /* gray-300 */
+        }
+        #darkModeToggle:hover {
+            background-color: #F3F4F6; /* gray-100 */
+        }
+        .dark #darkModeToggle {
+            background-color: #374151; /* gray-700 */
+            color: #F3F4F6; /* gray-100 */
+            border: 1px solid #4B5563; /* gray-600 */
+        }
+        .dark #darkModeToggle:hover {
+            background-color: #4B5563; /* gray-600 */
         }
 
-        .dark-mode .contact-section a:hover {
-            color: #FFA500;
-        }
-
-        .chart-container {
-            background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-            width: 100%;
-        }
-
-        .dark-mode .chart-container {
-            background: rgba(0, 0, 0, 0.8);
-        }
-
-        .lessons-section {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 12px;
-            width: 100%;
-        }
-
-        .dark-mode .lessons-section {
-            background: rgba(0, 0, 0, 0.8);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1200px) {
-            .glass-container {
-                margin: 15px;
-                padding: 15px;
-            }
-            .navbar {
-                gap: 15px;
-            }
-            .navbar a, .navbar button {
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-            .logo .book-icon {
-                font-size: 100px;
-            }
-            .logo .teacher-icon {
-                font-size: 50px;
-                margin-right: -25px;
-            }
-            h1 {
-                font-size: 1.8rem;
-            }
-            h2 {
-                font-size: 1.5rem;
-            }
-            input, select, textarea {
-                font-size: 12px;
-            }
-            button {
-                padding: 5px 8px;
-                font-size: 10px;
-            }
-            .chatbot {
-                bottom: 10px;
-                left: 10px;
-            }
-            .timer {
-                font-size: 18px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .glass-container {
-                margin: 10px;
-                padding: 10px;
-            }
-            .navbar {
-                gap: 10px;
-            }
-            .navbar a, .navbar button {
-                margin: 0 5px;
-                font-size: 10px;
-                padding: 4px 8px;
-            }
-            .logo .book-icon {
-                font-size: 80px;
-            }
-            .logo .teacher-icon {
-                font-size: 40px;
-                margin-right: -20px;
-            }
-            h1 {
-                font-size: 1.5rem;
-            }
-            h2 {
-                font-size: 1.2rem;
-            }
-            input, select, textarea {
-                font-size: 10px;
-                padding: 6px;
-            }
-            button {
-                padding: 4px 6px;
-                font-size: 8px;
-            }
-            .chatbot {
-                width: 85%;
-                left: 5%;
-                bottom: 5px;
-            }
-            .chatbot-header {
-                font-size: 12px;
-                padding: 6px;
-            }
-            .chatbot-body {
-                max-height: 150px;
-                font-size: 10px;
-            }
-            .chatbot input {
-                font-size: 10px;
-                padding: 4px;
-            }
-            .timer {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .glass-container {
-                margin: 5px;
-                padding: 5px;
-            }
-            .navbar {
-                gap: 5px;
-            }
-            .navbar a, .navbar button {
-                margin: 0 3px;
-                font-size: 8px;
-                padding: 3px 6px;
-            }
-            .logo .book-icon {
-                font-size: 60px;
-            }
-            .logo .teacher-icon {
-                font-size: 30px;
-                margin-right: -15px;
-            }
-            h1 {
-                font-size: 1.2rem;
-            }
-            h2 {
-                font-size: 1rem;
-            }
-            input, select, textarea {
-                font-size: 8px;
-                padding: 4px;
-            }
-            button {
-                padding: 3px 5px;
-                font-size: 6px;
-            }
-            .chatbot {
-                width: 80%;
-                left: 10%;
-                bottom: 5px;
-            }
-            .chatbot-header {
-                font-size: 10px;
-                padding: 4px;
-            }
-            .chatbot-body {
-                max-height: 100px;
-                font-size: 8px;
-            }
-            .chatbot input {
-                font-size: 8px;
-                padding: 3px;
-            }
-            .social-share a {
-                font-size: 16px;
-                margin: 0 5px;
-            }
-            .contact-section a {
-                font-size: 12px;
-                margin: 0 5px;
-            }
-            .timer {
-                font-size: 14px;
-            }
-        }
     </style>
 </head>
-<body>
-    <div class="navbar">
-        <a href="#about">عن الأستاذ محمد</a>
-        <a href="#contact">تواصل معنا</a>
-        <button id="loginButton" onclick="showLoginForm()" style="display: block;"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</button>
-        <button id="logoutButton" onclick="logout()" style="display: none;"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
-        <button id="darkModeToggle" onclick="toggleDarkMode()"><i class="fas fa-moon"></i></button>
+<body class="bg-gray-100 text-gray-800">
+
+    <button id="darkModeToggle" class="btn btn-icon fixed top-4 left-4 z-50">
+        </button>
+
+    <div id="appContainer" class="container mx-auto p-4 min-h-screen">
+
+        <div id="loginPage" class="page-container max-w-md mx-auto mt-10 bg-white p-8 rounded-lg shadow-xl">
+            <h1 class="text-3xl font-bold text-center text-blue-600 mb-2">منصة الأستاذ محمد درويش</h1>
+            
+            <div class="mt-6 mb-8 text-center">
+                <div id="profilePicContainer" class="profile-pic-container">
+                    <img id="profileImagePreview" src="https://placehold.co/120x120/E5E7EB/4B5563?text=صورتي" alt="صورة الأستاذ">
+                    <input type="file" id="profileImageInput" class="hidden" accept="image/*">
+                    <div id="editProfilePicBtn" class="profile-pic-edit-icon" title="تغيير الصورة">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                        </svg>
+                    </div>
+                    <button id="deleteProfilePicBtn" class="hidden" title="حذف الصورة">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-semibold text-center mb-6">تسجيل الدخول</h2>
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1">اسم المستخدم</label>
+                    <input type="text" id="username" name="username" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1">كلمة المرور</label>
+                    <input type="password" id="password" name="password" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full btn btn-primary">
+                    دخول
+                </button>
+                <p id="loginError" class="text-red-500 text-sm mt-2 text-center"></p>
+                <p class="text-center mt-4 text-sm text-gray-600">
+                    ليس لديك حساب؟ <a href="#" id="showRegisterLink" class="text-blue-600 hover:underline">سجل كطالب</a>
+                </p>
+            </form>
+        </div>
+
+        <div id="registrationPage" class="page-container hidden max-w-md mx-auto mt-10 bg-white p-8 rounded-lg shadow-xl">
+            <h2 class="text-2xl font-semibold text-center mb-6">تسجيل طالب جديد</h2>
+            <form id="registrationForm">
+                <div class="mb-4">
+                    <label for="regName" class="block text-sm font-medium text-gray-700 mb-1">الاسم الكامل</label>
+                    <input type="text" id="regName" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="regUsername" class="block text-sm font-medium text-gray-700 mb-1">اسم المستخدم (للدخول)</label>
+                    <input type="text" id="regUsername" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="regPassword" class="block text-sm font-medium text-gray-700 mb-1">كلمة المرور</label>
+                    <input type="password" id="regPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <button type="submit" class="w-full btn btn-success">
+                    تسجيل
+                </button>
+                <p id="registerError" class="text-red-500 text-sm mt-2 text-center"></p>
+                <p class="text-center mt-4 text-sm text-gray-600">
+                    لديك حساب بالفعل؟ <a href="#" id="showLoginLinkFromRegister" class="text-blue-600 hover:underline">سجل الدخول</a>
+                </p>
+            </form>
+        </div>
+        
+        <div id="adminDashboardPage" class="page-container hidden">
+            <header class="bg-white shadow-md rounded-lg p-6 mb-8">
+                <div class="flex flex-wrap justify-between items-center gap-4">
+                    <h1 class="text-3xl font-bold text-blue-700">لوحة تحكم الأستاذ</h1>
+                    <button id="adminLogoutBtn" class="btn btn-danger">تسجيل الخروج</button>
+                </div>
+                <nav class="mt-4">
+                    <ul class="flex flex-wrap gap-x-2 sm:gap-x-4 border-b border-gray-300 dark:border-gray-600 pb-1">
+                        <li><button data-target="adminStudentsSection" class="admin-nav-link font-semibold text-gray-600 hover:text-blue-600 border-transparent hover:border-blue-500">إدارة الطلاب</button></li>
+                        <li><button data-target="adminContentSection" class="admin-nav-link font-semibold text-gray-600 hover:text-blue-600 border-transparent hover:border-blue-500">إدارة المحتوى</button></li>
+                        <li><button data-target="adminExamsSection" class="admin-nav-link font-semibold text-gray-600 hover:text-blue-600 border-transparent hover:border-blue-500">إنشاء الاختبارات</button></li>
+                        <li><button data-target="adminProfileSection" class="admin-nav-link font-semibold text-gray-600 hover:text-blue-600 border-transparent hover:border-blue-500">ملف الأستاذ</button></li>
+                    </ul>
+                </nav>
+            </header>
+
+            <div id="adminStudentsSection" class="admin-section bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 text-blue-700">إدارة الطلاب</h2>
+                <button id="showAddStudentModalBtn" class="mb-6 btn btn-success">إضافة طالب جديد</button>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="py-3 px-4 border-b text-right font-semibold text-gray-700">الاسم</th>
+                                <th class="py-3 px-4 border-b text-right font-semibold text-gray-700">اسم المستخدم</th>
+                                <th class="py-3 px-4 border-b text-right font-semibold text-gray-700">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="adminContentSection" class="admin-section hidden bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 text-blue-700">إدارة المحتوى التعليمي</h2>
+                <button id="showAddContentModalBtn" class="mb-6 btn btn-success">إضافة محتوى جديد</button>
+                <div id="contentList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
+            </div>
+
+            <div id="adminExamsSection" class="admin-section hidden bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 text-blue-700">إنشاء و إدارة الاختبارات</h2>
+                <button id="showCreateExamModalBtn" class="mb-6 btn btn-success">إنشاء اختبار جديد</button>
+                <p class="text-sm text-gray-500 mb-4">ملاحظة: إنشاء الأسئلة من الملفات مباشرة وتصحيح المقالي تلقائياً هي ميزات متقدمة. حالياً، يمكنك إدخال الأسئلة يدوياً.</p>
+                <div id="examsList" class="space-y-4">
+                    </div>
+            </div>
+            
+            <div id="adminProfileSection" class="admin-section hidden bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 text-blue-700">عن الأستاذ محمد درويش</h2>
+                <div class="space-y-4 text-lg">
+                    <p><strong class="font-semibold">الاسم:</strong> الأستاذ محمد درويش</p>
+                    <p><strong class="font-semibold">اللقب:</strong> كبير معلمى اللغة العربية بإدارة شرق بمحافظة الإسكندرية</p>
+                    <p><strong class="font-semibold">المدرسة:</strong> الأستاذ المشرف على المادة بالقسم الاعدادي بمدرسة اشرف الخوجة لغات</p>
+                    <p><strong class="font-semibold">أرقام التواصل:</strong></p>
+                    <ul class="list-disc list-inside mr-4">
+                        <li>01223323049</li>
+                        <li>01223338507</li>
+                    </ul>
+                    <p><strong class="font-semibold">فيسبوك:</strong> <a href="https://www.facebook.com/share/16BudhEXqm/" target="_blank" class="text-blue-500 hover:underline">صفحة الأستاذ محمد درويش</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="studentDashboardPage" class="page-container hidden">
+            <header class="bg-white shadow-md rounded-lg p-6 mb-8">
+                <div class="flex flex-wrap justify-between items-center gap-4">
+                    <h1 class="text-3xl font-bold text-green-700">لوحة تحكم الطالب</h1>
+                    <button id="studentLogoutBtn" class="btn btn-danger">تسجيل الخروج</button>
+                </div>
+                 <p class="mt-2 text-lg">مرحباً بك <span id="studentNameDisplay" class="font-semibold"></span>!</p>
+                <nav class="mt-4">
+                     <ul class="flex flex-wrap gap-x-2 sm:gap-x-4 border-b border-gray-300 dark:border-gray-600 pb-1">
+                        <li><button data-target="studentViewContentSection" class="student-nav-link font-semibold text-gray-600 hover:text-green-600 border-transparent hover:border-green-500">عرض المحتوى</button></li>
+                        <li><button data-target="studentTakeExamSection" class="student-nav-link font-semibold text-gray-600 hover:text-green-600 border-transparent hover:border-green-500">الاختبارات المتاحة</button></li>
+                    </ul>
+                </nav>
+            </header>
+
+            <div id="studentViewContentSection" class="student-section bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 text-green-700">المحتوى التعليمي</h2>
+                <div id="studentContentList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
+            </div>
+
+            <div id="studentTakeExamSection" class="student-section hidden bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-semibold mb-6 text-green-700">الاختبارات المتاحة</h2>
+                <div id="studentExamsList" class="space-y-4">
+                    </div>
+            </div>
+             <div id="studentExamViewModal" class="modal hidden">
+                <div class="modal-content bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
+                    <h3 id="studentExamTitle" class="text-xl font-bold mb-4">عنوان الاختبار</h3>
+                    <div id="studentExamQuestionsContainer" class="max-h-[60vh] overflow-y-auto pr-2"></div>
+                    <div class="mt-6 flex justify-end gap-3">
+                        <button id="closeStudentExamModalBtn" class="btn btn-secondary">إغلاق</button>
+                        <button id="submitStudentExamBtn" class="btn btn-success">إرسال الإجابات</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+    
+    <div id="studentModal" class="modal hidden">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl">
+            <h3 id="studentModalTitle" class="text-xl font-bold mb-6">إضافة طالب جديد</h3>
+            <form id="studentForm">
+                <input type="hidden" id="studentId">
+                <div class="mb-4">
+                    <label for="studentName" class="block text-sm font-medium text-gray-700 mb-1">اسم الطالب</label>
+                    <input type="text" id="studentName" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="studentUsername" class="block text-sm font-medium text-gray-700 mb-1">اسم المستخدم (للدخول)</label>
+                    <input type="text" id="studentUsername" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-6">
+                    <label for="studentPassword" class="block text-sm font-medium text-gray-700 mb-1">كلمة المرور</label>
+                    <input type="password" id="studentPassword" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="flex justify-end space-x-3 space-x-reverse">
+                    <button type="button" id="cancelStudentModalBtn" class="btn btn-secondary">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div class="glass-container">
-        <!-- صفحة تسجيل الدخول -->
-        <div class="section login" id="login">
-            <div class="logo">
-                <i class="fas fa-book-open book-icon"></i>
-                <i class="fas fa-chalkboard-teacher teacher-icon"></i>
-            </div>
-            <h1>أ/ محمد درويش<br>Mr. Mohamed Darwish</h1>
-            <input type="text" id="username" placeholder="اسم المستخدم">
-            <input type="password" id="password" placeholder="كلمة المرور">
-            <button onclick="login()"><i class="fas fa-sign-in-alt"></i></button>
-        </div>
-
-        <!-- قسم عن الأستاذ محمد -->
-        <div class="section about-section" id="about">
-            <h2>عن الأستاذ محمد درويش</h2>
-            <p>مدرس لغة عربية في الإسكندرية، يعمل في مدرسة أشرف الخواجة في سموحة.</p>
-        </div>
-
-        <!-- قسم تواصل معنا -->
-        <div class="section contact-section" id="contact">
-            <h2>تواصل معنا</h2>
-            <p>
-                <a href="https://wa.me/+201223338507" target="_blank">
-                    <i class="fab fa-whatsapp"></i> +20 12 23338507
-                </a>
-            </p>
-            <p>
-                <a href="https://www.facebook.com/share/1CBfR21CMc/" target="_blank">
-                    <i class="fab fa-facebook"></i> صفحتنا على الفيسبوك
-                </a>
-            </p>
-        </div>
-
-        <!-- لوحة الأدمن -->
-        <div class="section admin-panel" id="adminPanel" style="display: none;">
-            <h2>لوحة تحكم الأدمن</h2>
-            <h3>إضافة طالب</h3>
-            <input type="text" id="studentUsername" placeholder="اسم المستخدم للطالب">
-            <input type="password" id="studentPassword" placeholder="كلمة المرور للطالب">
-            <button onclick="addStudent()"><i class="fas fa-user-plus"></i></button>
-
-            <h3>رفع ملف PDF</h3>
-            <input type="file" id="pdfFile" accept=".pdf">
-            <div class="progress-container" id="progressContainer">
-                <div class="progress-bar" id="progressBar"></div>
-            </div>
-            <button onclick="uploadPDF()"><i class="fas fa-upload"></i></button>
-
-            <h3>إدارة الأسئلة</h3>
-            <input type="text" id="questionText" placeholder="نص السؤال">
-            <input type="text" id="option1" placeholder="الخيار الأول">
-            <input type="text" id="option2" placeholder="الخيار الثاني">
-            <input type="text" id="option3" placeholder="الخيار الثالث">
-            <input type="text" id="option4" placeholder="الخيار الرابع">
-            <select id="correctAnswer">
-                <option value="1">الخيار الأول</option>
-                <option value="2">الخيار الثاني</option>
-                <option value="3">الخيار الثالث</option>
-                <option value="4">الخيار الرابع</option>
-            </select>
-            <input type="number" id="multipleQuestionGrade" placeholder="درجة السؤال" min="1">
-            <button onclick="addQuestion('multiple')"><i class="fas fa-plus-circle"></i> إضافة سؤال اختياري</button>
-            <textarea id="essayQuestionText" placeholder="نص السؤال المقالي" rows="3"></textarea>
-            <input type="number" id="essayQuestionGrade" placeholder="درجة السؤال المقالي" min="1">
-            <button onclick="addQuestion('essay')"><i class="fas fa-plus-circle"></i> إضافة سؤال مقالي</button>
-            <div id="questionList"></div>
-
-            <h3>تحديد وقت الامتحان</h3>
-            <input type="number" id="examTime" placeholder="الوقت بالدقائق" min="1">
-            <button onclick="setExamTime()">تأكيد الوقت</button>
-            <div id="timer" class="timer"></div>
-
-            <h3>قائمة الطلاب والدرجات</h3>
-            <div id="studentsList"></div>
-
-            <h3>قسم الدروس</h3>
-            <div class="lessons-section">
-                <input type="file" id="lessonFile" accept=".pdf,.txt">
-                <button onclick="uploadLesson()"><i class="fas fa-upload"></i></button>
-                <div id="lessonsList"></div>
-            </div>
-        </div>
-
-        <!-- لوحة الطالب -->
-        <div class="section student-panel" id="studentPanel" style="display: none;">
-            <h2>مرحبًا بالطالب</h2>
-            <div id="timer" class="timer"></div>
-            <div id="quiz"></div>
-            <button onclick="submitQuiz()" id="submitQuizBtn" style="display: none;"><i class="fas fa-paper-plane"></i> إرسال الإجابات</button>
-            <div id="studentResult" style="display: none;"></div>
-            <div class="social-share">
-                <p>شارك الموقع مع أصدقائك!</p>
-                <a href="https://wa.me/?text=جرب موقع الأستاذ محمد درويش لتعليم اللغة العربية!"><i class="fab fa-whatsapp"></i></a>
-                <a href="https://t.me/share/url?url=موقع الأستاذ محمد درويش&text=جرب موقع تعليمي رائع للغة العربية!"><i class="fab fa-telegram"></i></a>
-            </div>
+    <div id="contentModal" class="modal hidden">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl">
+            <h3 id="contentModalTitle" class="text-xl font-bold mb-6">إضافة محتوى جديد</h3>
+            <form id="contentForm">
+                <input type="hidden" id="contentId">
+                <div class="mb-4">
+                    <label for="contentTitle" class="block text-sm font-medium text-gray-700 mb-1">عنوان المحتوى</label>
+                    <input type="text" id="contentTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="contentType" class="block text-sm font-medium text-gray-700 mb-1">نوع المحتوى</label>
+                    <select id="contentType" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="pdf">ملف PDF</option>
+                        <option value="word">ملف Word</option>
+                        <option value="video">فيديو</option>
+                        <option value="audio">مقطع صوتي</option>
+                    </select>
+                </div>
+                <div class="mb-6">
+                    <label for="contentLink" class="block text-sm font-medium text-gray-700 mb-1">رابط المحتوى/الملف (أو اسم الملف)</label>
+                    <input type="text" id="contentLink" placeholder="مثال: https://example.com/file.pdf أو lesson1.pdf" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <p class="text-xs text-gray-500 mt-1">ملاحظة: للتشغيل الفعلي، يجب رفع الملفات لخادم واستخدام روابط مباشرة.</p>
+                </div>
+                <div class="flex justify-end space-x-3 space-x-reverse">
+                    <button type="button" id="cancelContentModalBtn" class="btn btn-secondary">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <!-- الشات بوت -->
-    <div class="chatbot" id="chatbot">
-        <div class="chatbot-header"><i class="fas fa-robot"></i> شات بوت الأستاذ محمد</div>
-        <div class="chatbot-body" id="chatbotBody"></div>
-        <div class="chatbot-footer">
-            <input type="text" id="chatInput" placeholder="اكتب سؤالك...">
-            <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+    <div id="examModal" class="modal hidden">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
+            <h3 id="examModalTitle" class="text-xl font-bold mb-6">إنشاء اختبار جديد</h3>
+            <form id="examForm">
+                <input type="hidden" id="examId">
+                <div class="mb-4">
+                    <label for="examTitle" class="block text-sm font-medium text-gray-700 mb-1">عنوان الاختبار</label>
+                    <input type="text" id="examTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                
+                <div id="questionsContainer" class="space-y-6 mb-6 max-h-96 overflow-y-auto p-2 border rounded-md">
+                    </div>
+
+                <button type="button" id="addQuestionBtn" class="mb-4 btn btn-warning">إضافة سؤال</button>
+
+                <div class="flex justify-end space-x-3 space-x-reverse mt-6">
+                    <button type="button" id="cancelExamModalBtn" class="btn btn-secondary">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ الاختبار</button>
+                </div>
+            </form>
         </div>
     </div>
-    <button onclick="toggleChatbot()" style="position: fixed; bottom: 15px; right: 15px; z-index: 100; width: auto; padding: 8px 12px; border-radius: 50%; font-size: 12px;">
-        <i class="fas fa-comments"></i>
-    </button>
+
+    <div id="customAlertModal" class="modal hidden">
+        <div class="modal-content bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h4 id="customAlertTitle" class="text-xl font-bold">رسالة</h4>
+                <button id="customAlertCloseBtn" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100 p-1 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <p id="customAlertMessage" class="text-gray-700 dark:text-gray-300 mb-6 break-words">محتوى الرسالة هنا.</p>
+            <div id="customAlertActions" class="flex justify-end space-x-3 space-x-reverse">
+                </div>
+        </div>
+    </div>
+
+
+    <div id="chatbotIcon" class="chatbot-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-3.861 8.25-8.625 8.25S3.75 16.556 3.75 12C3.75 7.444 7.611 3.75 12.375 3.75S21 7.444 21 12Z" />
+        </svg>
+    </div>
+    <div id="chatbotWindow" class="chatbot-window hidden">
+        <div class="chatbot-header">Mohamed Darwish Chatbot</div>
+        <div id="chatbotMessages" class="chatbot-messages">
+             </div>
+        <form id="chatbotInputForm" class="chatbot-input">
+            <input type="text" id="chatbotUserInput" placeholder="اكتب سؤالك هنا..." class="w-full">
+            <button type="submit" class="btn btn-primary" style="border-radius: 20px; padding: 10px 15px;">إرسال</button>
+        </form>
+    </div>
+
 
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js";
-        const adminCredentials = { username: "MD@2510", password: "MD@2510" };
-        let students = JSON.parse(localStorage.getItem("students")) || [];
-        let questions = JSON.parse(localStorage.getItem("questions")) || [];
-        let results = JSON.parse(localStorage.getItem("results")) || [];
-        let lessons = JSON.parse(localStorage.getItem("lessons")) || [];
-        let examTime = 0;
-        let timerInterval;
-        let showResults = false;
-        let isLoggedIn = false;
+        // --- Global State & Configuration ---
+        const ADMIN_USERNAME = "MD@2510";
+        const ADMIN_PASSWORD = "MD@2510";
+        const DEFAULT_PROFILE_PIC = "https://placehold.co/120x120/E5E7EB/4B5563?text=صورتي";
+        let appState = {
+            currentUser: null,
+            students: JSON.parse(localStorage.getItem('students')) || [],
+            content: JSON.parse(localStorage.getItem('content')) || [],
+            exams: JSON.parse(localStorage.getItem('exams')) || [],
+            darkMode: localStorage.getItem('darkMode') === 'true',
+            profilePic: localStorage.getItem('profilePic') || DEFAULT_PROFILE_PIC
+        };
 
-        // إخفاء جميع الأقسام عند التحميل
-        document.querySelectorAll('.section').forEach(section => {
-            section.style.display = 'none';
-        });
-        document.getElementById('login').style.display = 'block';
+        // --- DOM Elements ---
+        const appContainer = document.getElementById('appContainer');
+        const loginPage = document.getElementById('loginPage');
+        const registrationPage = document.getElementById('registrationPage');
+        const adminDashboardPage = document.getElementById('adminDashboardPage');
+        const studentDashboardPage = document.getElementById('studentDashboardPage');
+        const allPages = [loginPage, registrationPage, adminDashboardPage, studentDashboardPage];
 
-        // التنقل بين الأقسام
-        document.querySelectorAll('.navbar a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('href').substring(1);
-                document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
-                document.getElementById(targetId).style.display = 'block';
-            });
-        });
+        const loginForm = document.getElementById('loginForm');
+        const registrationForm = document.getElementById('registrationForm');
+        const loginError = document.getElementById('loginError');
+        const registerError = document.getElementById('registerError');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        
+        const profilePicContainer = document.getElementById('profilePicContainer');
+        const profileImagePreview = document.getElementById('profileImagePreview');
+        const profileImageInput = document.getElementById('profileImageInput');
+        const editProfilePicBtn = document.getElementById('editProfilePicBtn');
+        const deleteProfilePicBtn = document.getElementById('deleteProfilePicBtn');
 
-        // إظهار/إخفاء أزرار تسجيل الدخول والخروج
-        function updateLoginButtons() {
-            const loginButton = document.getElementById('loginButton');
-            const logoutButton = document.getElementById('logoutButton');
-            if (isLoggedIn) {
-                loginButton.style.display = 'none';
-                logoutButton.style.display = 'block';
-            } else {
-                loginButton.style.display = 'block';
-                logoutButton.style.display = 'none';
-            }
-        }
+        const adminNavLinks = document.querySelectorAll('.admin-nav-link');
+        const adminSections = document.querySelectorAll('.admin-section');
+        const studentsTableBody = document.getElementById('studentsTableBody');
+        const showAddStudentModalBtn = document.getElementById('showAddStudentModalBtn');
+        const studentModal = document.getElementById('studentModal');
+        const studentModalTitle = document.getElementById('studentModalTitle');
+        const studentForm = document.getElementById('studentForm');
+        const cancelStudentModalBtn = document.getElementById('cancelStudentModalBtn');
+        const studentIdInput = document.getElementById('studentId');
+        const studentNameInput = document.getElementById('studentName');
+        const studentUsernameInput = document.getElementById('studentUsername');
+        const studentPasswordInput = document.getElementById('studentPassword');
+        const adminLogoutBtn = document.getElementById('adminLogoutBtn');
 
-        function showLoginForm() {
-            document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
-            document.getElementById('login').style.display = 'block';
-        }
+        const showAddContentModalBtn = document.getElementById('showAddContentModalBtn');
+        const contentModal = document.getElementById('contentModal');
+        const contentModalTitle = document.getElementById('contentModalTitle');
+        const contentForm = document.getElementById('contentForm');
+        const cancelContentModalBtn = document.getElementById('cancelContentModalBtn');
+        const contentIdInput = document.getElementById('contentId');
+        const contentTitleInput = document.getElementById('contentTitle');
+        const contentTypeInput = document.getElementById('contentType');
+        const contentLinkInput = document.getElementById('contentLink');
+        const contentListDiv = document.getElementById('contentList');
 
-        function toggleDarkMode() {
-            document.body.classList.toggle("dark-mode");
-            const toggleButton = document.getElementById("darkModeToggle");
-            toggleButton.innerHTML = document.body.classList.contains("dark-mode")
-                ? '<i class="fas fa-sun"></i>'
-                : '<i class="fas fa-moon"></i>';
-        }
+        const showCreateExamModalBtn = document.getElementById('showCreateExamModalBtn');
+        const examModal = document.getElementById('examModal');
+        const examModalTitle = document.getElementById('examModalTitle');
+        const examForm = document.getElementById('examForm');
+        const cancelExamModalBtn = document.getElementById('cancelExamModalBtn');
+        const examIdInput = document.getElementById('examId');
+        const examTitleInput = document.getElementById('examTitle');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const addQuestionBtn = document.getElementById('addQuestionBtn');
+        const examsListDiv = document.getElementById('examsList');
 
-        function login() {
-            const username = document.getElementById("username").value.trim();
-            const password = document.getElementById("password").value.trim();
-            if (username === adminCredentials.username && password === adminCredentials.password) {
-                document.getElementById("login").style.display = 'none';
-                document.getElementById("adminPanel").style.display = 'block';
-                isLoggedIn = true;
-                updateLoginButtons();
-                loadStudentsList();
-                Swal.fire({
-                    title: "نجاح!",
-                    text: "تم تسجيل الدخول كأدمن بنجاح!",
-                    icon: "success",
-                    confirmButtonColor: "#FFD700"
-                });
-            } else {
-                const student = students.find(s => s.username === username && s.password === password);
-                if (student) {
-                    document.getElementById("login").style.display = 'none';
-                    document.getElementById("studentPanel").style.display = 'block';
-                    loadQuiz();
-                    startTimer();
-                    isLoggedIn = true;
-                    updateLoginButtons();
-                    Swal.fire({
-                        title: "نجاح!",
-                        text: "تم تسجيل الدخول كطالب بنجاح!",
-                        icon: "success",
-                        confirmButtonColor: "#FFD700"
-                    });
+        const studentNavLinks = document.querySelectorAll('.student-nav-link');
+        const studentSections = document.querySelectorAll('.student-section');
+        const studentLogoutBtn = document.getElementById('studentLogoutBtn');
+        const studentNameDisplay = document.getElementById('studentNameDisplay');
+        const studentContentListDiv = document.getElementById('studentContentList');
+        const studentExamsListDiv = document.getElementById('studentExamsList');
+        const studentExamViewModal = document.getElementById('studentExamViewModal');
+        const studentExamTitle = document.getElementById('studentExamTitle');
+        const studentExamQuestionsContainer = document.getElementById('studentExamQuestionsContainer');
+        const submitStudentExamBtn = document.getElementById('submitStudentExamBtn');
+        const closeStudentExamModalBtn = document.getElementById('closeStudentExamModalBtn');
+        let currentStudentExamId = null;
+
+        const chatbotIcon = document.getElementById('chatbotIcon');
+        const chatbotWindow = document.getElementById('chatbotWindow');
+        const chatbotMessagesDiv = document.getElementById('chatbotMessages');
+        const chatbotInputForm = document.getElementById('chatbotInputForm');
+        const chatbotUserInput = document.getElementById('chatbotUserInput');
+
+        // Custom Alert/Confirm Elements
+        const customAlertModal = document.getElementById('customAlertModal');
+        const customAlertTitle = document.getElementById('customAlertTitle');
+        const customAlertMessage = document.getElementById('customAlertMessage');
+        const customAlertActions = document.getElementById('customAlertActions');
+        const customAlertCloseBtn = document.getElementById('customAlertCloseBtn');
+        let confirmGlobalCallback = null;
+        let cancelGlobalCallback = null;
+
+        // --- Utility Functions ---
+        function navigateTo(pageId) {
+            allPages.forEach(page => {
+                if (page.id === pageId) {
+                    page.classList.remove('hidden');
                 } else {
-                    Swal.fire({
-                        title: "خطأ!",
-                        text: "اسم المستخدم أو كلمة المرور غير صحيحة!",
-                        icon: "error",
-                        confirmButtonColor: "#FFD700"
-                    });
+                    page.classList.add('hidden');
                 }
-            }
-        }
-
-        function addStudent() {
-            const username = document.getElementById("studentUsername").value.trim();
-            const password = document.getElementById("studentPassword").value.trim();
-            const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-            const passwordRegex = /^.{6,}$/;
-
-            if (!usernameRegex.test(username)) {
-                Swal.fire({
-                    title: "خطأ!",
-                    text: "اسم المستخدم يجب أن يكون بين 3 و20 حرفًا ويحتوي على أحرف وأرقام فقط!",
-                    icon: "error",
-                    confirmButtonColor: "#FFD700"
-                });
-                return;
-            }
-
-            if (!passwordRegex.test(password)) {
-                Swal.fire({
-                    title: "خطأ!",
-                    text: "كلمة المرور يجب أن تكون 6 أحرف على الأقل!",
-                    icon: "error",
-                    confirmButtonColor: "#FFD700"
-                });
-                return;
-            }
-
-            if (students.some(s => s.username === username)) {
-                Swal.fire({
-                    title: "خطأ!",
-                    text: "اسم المستخدم موجود بالفعل!",
-                    icon: "error",
-                    confirmButtonColor: "#FFD700"
-                });
-                return;
-            }
-
-            students.push({ username, password });
-            localStorage.setItem("students", JSON.stringify(students));
-            Swal.fire({
-                title: "نجاح!",
-                text: "تم إضافة الطالب بنجاح!",
-                icon: "success",
-                confirmButtonColor: "#FFD700"
             });
-            document.getElementById("studentUsername").value = '';
-            document.getElementById("studentPassword").value = '';
         }
 
-        async function uploadPDF() {
-            const file = document.getElementById("pdfFile").files[0];
-            if (!file) {
-                Swal.fire({
-                    title: "خطأ!",
-                    text: "يرجى اختيار ملف PDF!",
-                    icon: "error",
-                    confirmButtonColor: "#FFD700"
-                });
-                return;
-            }
+        function saveState() {
+            localStorage.setItem('students', JSON.stringify(appState.students));
+            localStorage.setItem('content', JSON.stringify(appState.content));
+            localStorage.setItem('exams', JSON.stringify(appState.exams));
+            localStorage.setItem('darkMode', appState.darkMode);
+            localStorage.setItem('profilePic', appState.profilePic);
+        }
+        
+        // --- Custom Alert/Confirm System ---
+        function showCustomAlert(message, title = "تنبيه", type = "info") {
+            customAlertTitle.textContent = title;
+            customAlertMessage.innerHTML = message; // Use innerHTML for <br> tags
 
-            const progressContainer = document.getElementById("progressContainer");
-            const progressBar = document.getElementById("progressBar");
-            progressContainer.style.display = "block";
-            progressBar.style.width = "0%";
-
-            const reader = new FileReader();
-            reader.onload = async function () {
-                const typedArray = new Uint8Array(this.result);
-                try {
-                    const pdf = await pdfjsLib.getDocument(typedArray).promise;
-                    let textContent = "";
-                    const totalPages = Math.min(pdf.numPages, 5);
-                    for (let i = 1; i <= totalPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const text = await page.getTextContent();
-                        textContent += text.items.map(item => item.str).join(" ") + "\n";
-                        progressBar.style.width = `${(i / totalPages) * 100}%`;
-                    }
-                    progressContainer.style.display = "none";
-                    generateQuestionsFromText(textContent);
-                } catch (error) {
-                    console.error("PDF Error:", error);
-                    const img = await Tesseract.recognize(file, "ara", {
-                        logger: m => {
-                            progressBar.style.width = `${m.progress * 100}%`;
-                        }
-                    });
-                    progressContainer.style.display = "none";
-                    generateQuestionsFromText(img.data.text);
-                }
+            customAlertActions.innerHTML = ''; // Clear previous buttons
+            const okButton = document.createElement('button');
+            okButton.textContent = "موافق";
+            okButton.className = "btn btn-primary";
+            okButton.onclick = () => {
+                customAlertModal.classList.add('hidden');
             };
-            reader.readAsArrayBuffer(file);
+            customAlertActions.appendChild(okButton);
+
+            customAlertTitle.className = "text-xl font-bold"; // Reset
+            switch (type) {
+                case 'error':
+                    customAlertTitle.classList.add('text-red-600', 'dark:text-red-400');
+                    break;
+                case 'success':
+                    customAlertTitle.classList.add('text-green-600', 'dark:text-green-400');
+                    break;
+                case 'warning':
+                    customAlertTitle.classList.add('text-yellow-500', 'dark:text-yellow-400');
+                    break;
+                default: // info
+                    customAlertTitle.classList.add('text-blue-600', 'dark:text-blue-400');
+                    break;
+            }
+            customAlertModal.classList.remove('hidden');
         }
 
-        async function generateQuestionsFromText(text) {
-            try {
-                const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCLcX37lYg-DV0JBWhpV-SAxgclZz3hy1c", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: `Generate 3 multiple-choice questions (each with 4 options and one correct answer) and 2 true/false questions based on the following Arabic text:\n${text}\nReturn the questions in JSON format with the structure: [{"type": "multiple", "questionText": "", "options": ["", "", "", ""], "correctAnswer": ""}, {"type": "truefalse", "questionText": "", "correctAnswer": "true/false"}]`
-                            }]
-                        }]
-                    })
-                });
-                const data = await response.json();
-                const generatedQuestions = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json\n|\n```/g, ""));
-                generatedQuestions.forEach(q => {
-                    if (q.type === "multiple" || q.type === "truefalse") {
-                        q.grade = 5; // درجة افتراضية للأسئلة المولدة
+        function showCustomConfirm(message, title = "تأكيد", onConfirm, onCancel) {
+            customAlertTitle.textContent = title;
+            customAlertMessage.innerHTML = message;
+            confirmGlobalCallback = onConfirm;
+            cancelGlobalCallback = onCancel;
+
+            customAlertActions.innerHTML = '';
+            const confirmButton = document.createElement('button');
+            confirmButton.textContent = "تأكيد";
+            confirmButton.className = "btn btn-success"; // Or btn-danger if it's a destructive action
+            confirmButton.onclick = () => {
+                customAlertModal.classList.add('hidden');
+                if (confirmGlobalCallback) confirmGlobalCallback();
+                confirmGlobalCallback = null; cancelGlobalCallback = null;
+            };
+
+            const cancelButton = document.createElement('button');
+            cancelButton.textContent = "إلغاء";
+            cancelButton.className = "btn btn-secondary";
+            cancelButton.onclick = () => {
+                customAlertModal.classList.add('hidden');
+                if (cancelGlobalCallback) cancelGlobalCallback();
+                confirmGlobalCallback = null; cancelGlobalCallback = null;
+            };
+            customAlertActions.appendChild(cancelButton); 
+            customAlertActions.appendChild(confirmButton);
+
+            customAlertTitle.className = "text-xl font-bold text-yellow-600 dark:text-yellow-400";
+            customAlertModal.classList.remove('hidden');
+        }
+
+        customAlertCloseBtn.addEventListener('click', () => {
+            customAlertModal.classList.add('hidden');
+            if (cancelGlobalCallback && customAlertActions.querySelector('.btn-secondary')) { 
+                cancelGlobalCallback();
+            }
+            confirmGlobalCallback = null; 
+            cancelGlobalCallback = null;
+        });
+        
+        // Close modals with Escape key
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                [studentModal, contentModal, examModal, studentExamViewModal, customAlertModal].forEach(modal => {
+                    if (!modal.classList.contains('hidden')) {
+                        // For confirm modal, pressing Esc should be like Cancel
+                        if (modal === customAlertModal && cancelGlobalCallback && customAlertActions.querySelector('.btn-secondary')) {
+                             cancelGlobalCallback();
+                        }
+                        modal.classList.add('hidden');
+                        confirmGlobalCallback = null; 
+                        cancelGlobalCallback = null;
                     }
                 });
-                questions.push(...generatedQuestions);
-                localStorage.setItem("questions", JSON.stringify(questions));
-                loadQuestionList();
-                Swal.fire({
-                    title: "نجاح!",
-                    text: "تم استخراج النصوص وتوليد الأسئلة بنجاح!",
-                    icon: "success",
-                    confirmButtonColor: "#FFD700"
-                });
-            } catch (error) {
-                console.error("Generation Error:", error);
-                Swal.fire({
-                    title: "خطأ!",
-                    text: "حدث خطأ أثناء معالجة الملف أو توليد الأسئلة!",
-                    icon: "error",
-                    confirmButtonColor: "#FFD700"
-                });
-            }
-        }
-
-        function addQuestion(type) {
-            if (type === 'multiple') {
-                const questionText = document.getElementById("questionText").value.trim();
-                const options = [
-                    document.getElementById("option1").value.trim(),
-                    document.getElementById("option2").value.trim(),
-                    document.getElementById("option3").value.trim(),
-                    document.getElementById("option4").value.trim()
-                ];
-                const correctAnswer = document.getElementById("correctAnswer").value;
-                const grade = parseInt(document.getElementById("multipleQuestionGrade").value);
-
-                if (questionText && options.every(opt => opt) && grade > 0) {
-                    questions.push({ type: "multiple", questionText, options, correctAnswer, grade });
-                    localStorage.setItem("questions", JSON.stringify(questions));
-                    loadQuestionList();
-                    document.getElementById("questionText").value = '';
-                    document.getElementById("option1").value = '';
-                    document.getElementById("option2").value = '';
-                    document.getElementById("option3").value = '';
-                    document.getElementById("option4").value = '';
-                    document.getElementById("multipleQuestionGrade").value = '';
-                    Swal.fire({
-                        title: "نجاح!",
-                        text: "تم إضافة السؤال بنجاح!",
-                        icon: "success",
-                        confirmButtonColor: "#FFD700"
-                    });
-                } else {
-                    Swal.fire({
-                        title: "خطأ!",
-                        text: "يرجى ملء جميع الحقول وإدخال درجة صحيحة!",
-                        icon: "error",
-                        confirmButtonColor: "#FFD700"
-                    });
-                }
-            } else if (type === 'essay') {
-                const questionText = document.getElementById("essayQuestionText").value.trim();
-                const grade = parseInt(document.getElementById("essayQuestionGrade").value);
-                if (questionText && grade > 0) {
-                    questions.push({ type: "essay", questionText, grade });
-                    localStorage.setItem("questions", JSON.stringify(questions));
-                    loadQuestionList();
-                    document.getElementById("essayQuestionText").value = '';
-                    document.getElementById("essayQuestionGrade").value = '';
-                    Swal.fire({
-                        title: "نجاح!",
-                        text: "تم إضافة السؤال المقالي بنجاح!",
-                        icon: "success",
-                        confirmButtonColor: "#FFD700"
-                    });
-                } else {
-                    Swal.fire({
-                        title: "خطأ!",
-                        text: "يرجى كتابة نص السؤال المقالي وإدخال درجة صحيحة!",
-                        icon: "error",
-                        confirmButtonColor: "#FFD700"
-                    });
+                 if (!chatbotWindow.classList.contains('hidden')) {
+                    chatbotWindow.classList.add('hidden');
                 }
             }
-        }
+        });
 
-        function loadQuestionList() {
-            const questionList = document.getElementById("questionList");
-            questionList.innerHTML = questions.map((q, index) => `
-                <div style="background: rgba(255, 255, 255, 0.5); padding: 8px; margin: 5px 0; border-radius: 8px; font-size: 12px;">
-                    <p>${q.questionText} (${q.type === "multiple" ? "اختياري" : "مقالي"})</p>
-                    ${q.type === "multiple" ? q.options.map((opt, i) => `<p>خيار ${i + 1}: ${opt}</p>`).join('') : ''}
-                    ${q.type === "multiple" ? `<p>الإجابة الصحيحة: ${q.options[parseInt(q.correctAnswer) - 1]}</p>` : ''}
-                    <p>الدرجة: ${q.grade}</p>
-                    <button onclick="editQuestion(${index})" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-edit"></i></button>
-                    <button onclick="deleteQuestion(${index})" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join("");
-        }
 
-        function editQuestion(index) {
-            const q = questions[index];
-            if (q.type === "multiple") {
-                document.getElementById("questionText").value = q.questionText;
-                document.getElementById("option1").value = q.options[0];
-                document.getElementById("option2").value = q.options[1];
-                document.getElementById("option3").value = q.options[2];
-                document.getElementById("option4").value = q.options[3];
-                document.getElementById("correctAnswer").value = q.correctAnswer;
-                document.getElementById("multipleQuestionGrade").value = q.grade;
-                deleteQuestion(index);
-            } else if (q.type === "essay") {
-                document.getElementById("essayQuestionText").value = q.questionText;
-                document.getElementById("essayQuestionGrade").value = q.grade;
-                deleteQuestion(index);
-            }
-        }
-
-        function deleteQuestion(index) {
-            questions.splice(index, 1);
-            localStorage.setItem("questions", JSON.stringify(questions));
-            loadQuestionList();
-            Swal.fire({
-                title: "نجاح!",
-                text: "تم حذف السؤال بنجاح!",
-                icon: "success",
-                confirmButtonColor: "#FFD700"
-            });
-        }
-
-        function loadQuiz() {
-            const quizDiv = document.getElementById("quiz");
-            quizDiv.innerHTML = "";
-            questions.forEach((q, index) => {
-                if (q.type === "multiple") {
-                    quizDiv.innerHTML += `
-                        <div class="question" style="font-size: 12px;">
-                            <p>${index + 1}. ${q.questionText} (${q.grade} درجات)</p>
-                            ${q.options.map((opt, i) => `
-                                <input type="radio" name="q${index}" value="${i + 1}"> ${opt}<br>
-                            `).join("")}
-                        </div>
-                    `;
-                } else if (q.type === "essay") {
-                    quizDiv.innerHTML += `
-                        <div class="question" style="font-size: 12px;">
-                            <p>${index + 1}. ${q.questionText} (${q.grade} درجات)</p>
-                            <textarea id="essayAnswer${index}" placeholder="اكتب إجابتك هنا..." rows="3"></textarea><br>
-                        </div>
-                    `;
-                }
-            });
-            document.getElementById("submitQuizBtn").style.display = "block";
-        }
-
-        function submitQuiz() {
-            clearInterval(timerInterval); // إيقاف التايمر عند الإرسال
-            let score = 0;
-            let totalMultipleChoiceGrade = questions
-                .filter(q => q.type === "multiple")
-                .reduce((sum, q) => sum + q.grade, 0); // مجموع درجات الأسئلة الاختيارية فقط
-            let essayAnswers = {};
-
-            questions.forEach((q, index) => {
-                if (q.type === "multiple") {
-                    const selected = document.querySelector(`input[name="q${index}"]:checked`);
-                    if (selected && selected.value === q.correctAnswer) {
-                        score += q.grade; // إضافة درجة السؤال إذا كانت الإجابة صحيحة
-                    }
-                } else if (q.type === "essay") {
-                    essayAnswers[`q${index}`] = document.getElementById(`essayAnswer${index}`).value.trim();
-                }
-            });
-
-            // تحويل الدرجة إلى نسبة مئوية من 100
-            const percentage = totalMultipleChoiceGrade > 0 ? (score / totalMultipleChoiceGrade) * 100 : 0;
-            const username = document.getElementById("username").value;
-            results.push({ username, score: `${percentage.toFixed(2)}%` });
-            localStorage.setItem("results", JSON.stringify(results));
-            loadStudentsList(); // تحديث قائمة الطلاب في واجهة الأدمن
-
-            let badge = "مبتدئ";
-            if (percentage >= 95) badge = "متفوق";
-            else if (percentage >= 90) badge = "متميز";
-            else if (percentage >= 70) badge = "متقدم";
-            else if (percentage >= 50) badge = "جيد";
-
-            let resultMessage = `حصلت على ${score} من ${totalMultipleChoiceGrade} (نسبة: ${percentage.toFixed(2)}%)<br>شارة: ${badge}`;
-            if (Object.keys(essayAnswers).length > 0) {
-                resultMessage += "<br>الإجابات المقالية سجلت بنجاح، يرجى مراجعتها مع الأستاذ.";
-            }
-
-            Swal.fire({
-                title: "نتيجتك!",
-                html: resultMessage,
-                icon: "info",
-                confirmButtonColor: "#FFD700"
-            });
-            document.getElementById("studentResult").style.display = "block";
-            document.getElementById("studentResult").innerHTML = `نتيجتك: ${score} من ${totalMultipleChoiceGrade} (نسبة: ${percentage.toFixed(2)}%) (شارة: ${badge})`;
-            document.getElementById("submitQuizBtn").style.display = "none";
-        }
-
-        function setExamTime() {
-            const time = parseInt(document.getElementById("examTime").value);
-            if (time && time > 0) {
-                examTime = time * 60; // تحويل الدقائق إلى ثواني
-                Swal.fire({
-                    title: "نجاح!",
-                    text: `تم تعيين وقت الامتحان إلى ${time} دقائق!`,
-                    icon: "success",
-                    confirmButtonColor: "#FFD700"
-                });
-                document.getElementById("examTime").value = '';
+        function applyDarkMode() {
+            const htmlElement = document.documentElement;
+            if (appState.darkMode) {
+                htmlElement.classList.add('dark');
+                darkModeToggle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-full h-full">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                    </svg>`; // Sun icon
             } else {
-                Swal.fire({
-                    title: "خطأ!",
-                    text: "يرجى إدخال وقت صحيح بالدقائق!",
-                    icon: "error",
-                    confirmButtonColor: "#FFD700"
-                });
+                htmlElement.classList.remove('dark');
+                darkModeToggle.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-full h-full">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                    </svg>`; // Moon icon
+            }
+        }
+        
+        // --- Profile Picture Logic ---
+        function loadProfilePic() {
+            profileImagePreview.src = appState.profilePic;
+            if (appState.profilePic && appState.profilePic !== DEFAULT_PROFILE_PIC) {
+                deleteProfilePicBtn.classList.remove('hidden');
+            } else {
+                deleteProfilePicBtn.classList.add('hidden');
             }
         }
 
-        function startTimer() {
-            if (examTime <= 0) {
-                Swal.fire({
-                    title: "تحذير!",
-                    text: "يرجى تعيين وقت الامتحان أولاً من قبل الأدمن!",
-                    icon: "warning",
-                    confirmButtonColor: "#FFD700"
-                });
-                return;
+        editProfilePicBtn.addEventListener('click', () => profileImageInput.click());
+        profilePicContainer.addEventListener('click', (e) => {
+            if (e.target !== deleteProfilePicBtn && !deleteProfilePicBtn.contains(e.target) && e.target !== editProfilePicBtn && !editProfilePicBtn.contains(e.target)) {
+                 profileImageInput.click();
             }
-            let timeLeft = examTime;
-            const timerDiv = document.getElementById("timer");
-            timerDiv.textContent = `الوقت المتبقي: ${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? '0' : ''}${timeLeft % 60}`;
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                timerDiv.textContent = `الوقت المتبقي: ${Math.floor(timeLeft / 60)}:${timeLeft % 60 < 10 ? '0' : ''}${timeLeft % 60}`;
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    submitQuiz(); // إرسال الإجابات تلقائيًا عند انتهاء الوقت
-                    timerDiv.textContent = "انتهى الوقت!";
-                }
-            }, 1000);
-        }
+        });
 
-        function loadStudentsList() {
-            const studentsList = document.getElementById("studentsList");
-            studentsList.innerHTML = results.map(r => {
-                const student = students.find(s => s.username === r.username);
-                return `
-                    <div style="background: rgba(255, 255, 255, 0.5); padding: 8px; margin: 5px 0; border-radius: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
-                        <p>${r.username}: ${r.score}</p>
-                        <button onclick="deleteStudent('${r.username}')" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-trash"></i></button>
-                    </div>
-                `;
-            }).join("");
-        }
-
-        function deleteStudent(username) {
-            Swal.fire({
-                title: "هل أنت متأكد؟",
-                text: "سيتم حذف الطالب نهائيًا من الموقع!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "نعم، احذف!",
-                cancelButtonText: "إلغاء"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    students = students.filter(s => s.username !== username);
-                    results = results.filter(r => r.username !== username);
-                    localStorage.setItem("students", JSON.stringify(students));
-                    localStorage.setItem("results", JSON.stringify(results));
-                    loadStudentsList();
-                    Swal.fire({
-                        title: "تم!",
-                        text: "تم حذف الطالب بنجاح!",
-                        icon: "success",
-                        confirmButtonColor: "#FFD700"
-                    });
-                }
-            });
-        }
-
-        function uploadLesson() {
-            const file = document.getElementById("lessonFile").files[0];
+        profileImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    lessons.push({ name: file.name, content: e.target.result });
-                    localStorage.setItem("lessons", JSON.stringify(lessons));
-                    loadLessonsList();
-                    Swal.fire({
-                        title: "نجاح!",
-                        text: "تم رفع الدرس بنجاح!",
-                        icon: "success",
-                        confirmButtonColor: "#FFD700"
-                    });
-                };
+                reader.onload = (e) => {
+                    appState.profilePic = e.target.result;
+                    profileImagePreview.src = appState.profilePic;
+                    deleteProfilePicBtn.classList.remove('hidden');
+                    saveState();
+                }
                 reader.readAsDataURL(file);
-            } else {
-                Swal.fire({
-                    title: "خطأ!",
-                    text: "يرجى اختيار ملف!",
-                    icon: "error",
-                    confirmButtonColor: "#FFD700"
-                });
             }
-        }
+        });
 
-        function loadLessonsList() {
-            const lessonsList = document.getElementById("lessonsList");
-            lessonsList.innerHTML = lessons.map((lesson, index) => `
-                <div style="background: rgba(255, 255, 255, 0.5); padding: 8px; margin: 5px 0; border-radius: 8px; font-size: 12px;">
-                    <p>${lesson.name}</p>
-                    <button onclick="deleteLesson(${index})" style="padding: 2px 6px; font-size: 8px;"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join("");
-        }
-
-        function deleteLesson(index) {
-            lessons.splice(index, 1);
-            localStorage.setItem("lessons", JSON.stringify(lessons));
-            loadLessonsList();
-            Swal.fire({
-                title: "نجاح!",
-                text: "تم حذف الدرس بنجاح!",
-                icon: "success",
-                confirmButtonColor: "#FFD700"
+        deleteProfilePicBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            showCustomConfirm('هل أنت متأكد من حذف الصورة الشخصية؟', 'تأكيد الحذف', () => {
+                appState.profilePic = DEFAULT_PROFILE_PIC;
+                profileImagePreview.src = appState.profilePic;
+                deleteProfilePicBtn.classList.add('hidden');
+                profileImageInput.value = ''; 
+                saveState();
             });
-        }
+        });
+
+        // --- Authentication ---
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = loginForm.username.value;
+            const password = loginForm.password.value;
+            loginError.textContent = '';
+
+            if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+                appState.currentUser = { username: ADMIN_USERNAME, role: 'admin' };
+                navigateTo('adminDashboardPage');
+                renderAdminDashboard();
+            } else {
+                const student = appState.students.find(s => s.username === username && s.password === password);
+                if (student) {
+                    appState.currentUser = { username: student.username, name: student.name, role: 'student' };
+                    navigateTo('studentDashboardPage');
+                    renderStudentDashboard();
+                } else {
+                    loginError.textContent = 'اسم المستخدم أو كلمة المرور غير صحيحة.';
+                }
+            }
+        });
+
+        registrationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = registrationForm.regName.value;
+            const username = registrationForm.regUsername.value;
+            const password = registrationForm.regPassword.value;
+            registerError.textContent = '';
+
+            if (appState.students.find(s => s.username === username)) {
+                registerError.textContent = 'اسم المستخدم هذا موجود بالفعل.';
+                return;
+            }
+            if (username === ADMIN_USERNAME) {
+                 registerError.textContent = 'لا يمكن استخدام اسم مستخدم المدير.';
+                return;
+            }
+
+            const newStudent = { id: Date.now().toString(), name, username, password };
+            appState.students.push(newStudent);
+            saveState();
+            showCustomAlert('تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.', 'نجاح التسجيل', 'success');
+            navigateTo('loginPage');
+            registrationForm.reset();
+        });
+        
+        document.getElementById('showRegisterLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('registrationPage');
+        });
+        document.getElementById('showLoginLinkFromRegister').addEventListener('click', (e) => {
+            e.preventDefault();
+            navigateTo('loginPage');
+        });
 
         function logout() {
-            clearInterval(timerInterval); // إيقاف التايمر عند الخروج
-            document.querySelectorAll('.section').forEach(section => section.style.display = 'none');
-            document.getElementById('login').style.display = 'block';
-            isLoggedIn = false;
-            updateLoginButtons();
-            Swal.fire({
-                title: "نجاح!",
-                text: "تم تسجيل الخروج بنجاح!",
-                icon: "success",
-                confirmButtonColor: "#FFD700"
+            appState.currentUser = null;
+            navigateTo('loginPage');
+        }
+        adminLogoutBtn.addEventListener('click', logout);
+        studentLogoutBtn.addEventListener('click', logout);
+
+        // --- Dark Mode ---
+        darkModeToggle.addEventListener('click', () => {
+            appState.darkMode = !appState.darkMode;
+            applyDarkMode();
+            saveState();
+        });
+
+        // --- Admin Dashboard Logic ---
+        function renderAdminDashboard() {
+            switchAdminSection('adminStudentsSection');
+            renderStudentsTable();
+            renderContentList();
+            renderExamsList();
+        }
+
+        adminNavLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                switchAdminSection(e.target.dataset.target);
+            });
+        });
+
+        function switchAdminSection(sectionId) {
+            adminSections.forEach(section => {
+                if (section.id === sectionId) section.classList.remove('hidden');
+                else section.classList.add('hidden');
+            });
+            adminNavLinks.forEach(link => {
+                link.classList.remove('admin-nav-active');
+                if (link.dataset.target === sectionId) {
+                    link.classList.add('admin-nav-active');
+                }
             });
         }
 
-        // تحديث الأزرار عند تحميل الصفحة
-        updateLoginButtons();
+        function renderStudentsTable() {
+            studentsTableBody.innerHTML = '';
+            if (appState.students.length === 0) {
+                studentsTableBody.innerHTML = '<tr><td colspan="3" class="text-center py-4">لا يوجد طلاب مسجلون حالياً.</td></tr>';
+                return;
+            }
+            appState.students.forEach(student => {
+                const row = studentsTableBody.insertRow();
+                row.className = "hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors";
+                row.innerHTML = `
+                    <td class="py-3 px-4 border-b dark:border-gray-600">${student.name}</td>
+                    <td class="py-3 px-4 border-b dark:border-gray-600">${student.username}</td>
+                    <td class="py-3 px-4 border-b dark:border-gray-600">
+                        <button onclick="editStudent('${student.id}')" class="btn-action-table edit">تعديل</button>
+                        <button onclick="deleteStudent('${student.id}')" class="btn-action-table delete">حذف</button>
+                    </td>
+                `;
+            });
+        }
+
+        showAddStudentModalBtn.addEventListener('click', () => {
+            studentModalTitle.textContent = 'إضافة طالب جديد';
+            studentForm.reset();
+            studentIdInput.value = '';
+            studentModal.classList.remove('hidden');
+        });
+
+        cancelStudentModalBtn.addEventListener('click', () => {
+            studentModal.classList.add('hidden');
+        });
+
+        studentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = studentIdInput.value;
+            const name = studentNameInput.value;
+            const username = studentUsernameInput.value;
+            const password = studentPasswordInput.value;
+
+            if (id) { 
+                const studentIndex = appState.students.findIndex(s => s.id === id);
+                if (studentIndex > -1) {
+                    // Check if new username already exists (excluding current student)
+                    if (appState.students.some(s => s.username === username && s.id !== id)) {
+                        showCustomAlert('اسم المستخدم هذا موجود بالفعل لطالب آخر.', 'خطأ', 'error');
+                        return;
+                    }
+                    appState.students[studentIndex] = { ...appState.students[studentIndex], name, username, password };
+                }
+            } else { 
+                 if (appState.students.find(s => s.username === username)) {
+                    showCustomAlert('اسم المستخدم هذا موجود بالفعل.', 'خطأ', 'error');
+                    return;
+                }
+                appState.students.push({ id: Date.now().toString(), name, username, password });
+            }
+            saveState();
+            renderStudentsTable();
+            studentModal.classList.add('hidden');
+            showCustomAlert(id ? 'تم تحديث بيانات الطالب بنجاح.' : 'تم إضافة الطالب بنجاح.', 'نجاح', 'success');
+        });
+
+        window.editStudent = (id) => { 
+            const student = appState.students.find(s => s.id === id);
+            if (student) {
+                studentModalTitle.textContent = 'تعديل بيانات الطالب';
+                studentIdInput.value = student.id;
+                studentNameInput.value = student.name;
+                studentUsernameInput.value = student.username;
+                studentPasswordInput.value = student.password; 
+                studentModal.classList.remove('hidden');
+            }
+        };
+
+        window.deleteStudent = (id) => { 
+            showCustomConfirm('هل أنت متأكد من حذف هذا الطالب؟', 'تأكيد الحذف', () => {
+                appState.students = appState.students.filter(s => s.id !== id);
+                saveState();
+                renderStudentsTable();
+                showCustomAlert('تم حذف الطالب بنجاح.', 'نجاح', 'success');
+            });
+        };
+
+        function renderContentList() {
+            contentListDiv.innerHTML = '';
+             if (appState.content.length === 0) {
+                contentListDiv.innerHTML = '<p class="text-center col-span-full py-4 text-gray-500">لا يوجد محتوى مضاف حالياً.</p>';
+                return;
+            }
+            appState.content.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-xl transition-shadow flex flex-col justify-between';
+                let icon = '';
+                switch(item.type) {
+                    case 'pdf': icon = '📄'; break;
+                    case 'word': icon = '📝'; break;
+                    case 'video': icon = '🎬'; break;
+                    case 'audio': icon = '🎧'; break;
+                }
+                itemDiv.innerHTML = `
+                    <div>
+                        <h4 class="text-lg font-semibold text-blue-600 dark:text-blue-400 mb-1">${icon} ${item.title}</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">النوع: ${item.type.toUpperCase()}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500 truncate" title="${item.link}">الرابط: ${item.link}</p>
+                    </div>
+                    <div class="mt-4 flex gap-2 justify-end">
+                        <button onclick="editContent('${item.id}')" class="btn-action-table edit">تعديل</button>
+                        <button onclick="deleteContent('${item.id}')" class="btn-action-table delete">حذف</button>
+                    </div>
+                `;
+                contentListDiv.appendChild(itemDiv);
+            });
+        }
+        
+        showAddContentModalBtn.addEventListener('click', () => {
+            contentModalTitle.textContent = 'إضافة محتوى جديد';
+            contentForm.reset();
+            contentIdInput.value = '';
+            contentModal.classList.remove('hidden');
+        });
+
+        cancelContentModalBtn.addEventListener('click', () => {
+            contentModal.classList.add('hidden');
+        });
+
+        contentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = contentIdInput.value;
+            const title = contentTitleInput.value;
+            const type = contentTypeInput.value;
+            const link = contentLinkInput.value;
+
+            if (id) {
+                const index = appState.content.findIndex(c => c.id === id);
+                if (index > -1) appState.content[index] = { ...appState.content[index], title, type, link };
+            } else {
+                appState.content.push({ id: Date.now().toString(), title, type, link });
+            }
+            saveState();
+            renderContentList();
+            renderStudentContentList(); 
+            contentModal.classList.add('hidden');
+            showCustomAlert(id ? 'تم تحديث المحتوى بنجاح.' : 'تم إضافة المحتوى بنجاح.', 'نجاح', 'success');
+        });
+
+        window.editContent = (id) => {
+            const item = appState.content.find(c => c.id === id);
+            if (item) {
+                contentModalTitle.textContent = 'تعديل المحتوى';
+                contentIdInput.value = item.id;
+                contentTitleInput.value = item.title;
+                contentTypeInput.value = item.type;
+                contentLinkInput.value = item.link;
+                contentModal.classList.remove('hidden');
+            }
+        };
+
+        window.deleteContent = (id) => {
+            showCustomConfirm('هل أنت متأكد من حذف هذا المحتوى؟', 'تأكيد الحذف', () => {
+                appState.content = appState.content.filter(c => c.id !== id);
+                saveState();
+                renderContentList();
+                renderStudentContentList();
+                showCustomAlert('تم حذف المحتوى بنجاح.', 'نجاح', 'success');
+            });
+        };
+
+        let currentQuestions = []; 
+
+        function renderExamsList() {
+            examsListDiv.innerHTML = '';
+            if (appState.exams.length === 0) {
+                examsListDiv.innerHTML = '<p class="text-center py-4 text-gray-500">لا يوجد اختبارات منشأة حالياً.</p>';
+                return;
+            }
+            appState.exams.forEach(exam => {
+                const examCard = document.createElement('div');
+                examCard.className = 'bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-xl transition-shadow';
+                examCard.innerHTML = `
+                    <h4 class="text-lg font-semibold text-purple-600 dark:text-purple-400">${exam.title}</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">عدد الأسئلة: ${exam.questions.length}</p>
+                    <div class="mt-4 flex flex-wrap gap-2 justify-end">
+                        <button onclick="editExam('${exam.id}')" class="btn-action-table edit">تعديل</button>
+                        <button onclick="deleteExam('${exam.id}')" class="btn-action-table delete">حذف</button>
+                        <button onclick="previewExam('${exam.id}')" class="btn-action-table preview">معاينة</button>
+                    </div>
+                `;
+                examsListDiv.appendChild(examCard);
+            });
+        }
+
+        showCreateExamModalBtn.addEventListener('click', () => {
+            examModalTitle.textContent = 'إنشاء اختبار جديد';
+            examForm.reset();
+            examIdInput.value = '';
+            currentQuestions = [];
+            renderQuestionsInModal();
+            examModal.classList.remove('hidden');
+        });
+        
+        cancelExamModalBtn.addEventListener('click', () => {
+            examModal.classList.add('hidden');
+        });
+
+        addQuestionBtn.addEventListener('click', () => {
+            const questionType = prompt("نوع السؤال:\n1. اختيار من متعدد (اكتب mcq)\n2. مقالي (اكتب essay)", "mcq");
+            if (!questionType || (questionType.toLowerCase() !== 'mcq' && questionType.toLowerCase() !== 'essay')) return;
+
+            const questionText = prompt("نص السؤال:");
+            if (!questionText) return;
+
+            let questionData = { id: Date.now().toString(), type: questionType.toLowerCase(), text: questionText };
+
+            if (questionData.type === 'mcq') {
+                questionData.options = [];
+                let option;
+                for (let i = 0; i < 4; i++) { 
+                    option = prompt(`خيار ${i + 1}: (اترك فارغاً واضغط موافق لإنهاء إضافة الخيارات)`);
+                    if (option === null) { // User pressed cancel
+                        if (i<2) {
+                            showCustomAlert("يجب إدخال خيارين على الأقل لسؤال الاختيار من متعدد.", 'خطأ في الإدخال', 'error');
+                            return;
+                        }
+                        break;
+                    }
+                    if (option.trim() === "" && i >= 2) break; // Allow less than 4 options if user leaves empty and presses OK (after 2 options)
+                     if (option.trim() === "" && i < 2) {
+                         showCustomAlert(`الخيار ${i+1} لا يمكن أن يكون فارغاً.`, 'خطأ في الإدخال', 'error');
+                         return;
+                     }
+                    questionData.options.push(option);
+                }
+                if (questionData.options.length < 2) {
+                     showCustomAlert("يجب إدخال خيارين على الأقل لسؤال الاختيار من متعدد.", 'خطأ في الإدخال', 'error');
+                     return;
+                }
+                let correctOptionIndexStr;
+                let correctOptionIndex;
+                do {
+                   correctOptionIndexStr = prompt(`رقم الخيار الصحيح (1-${questionData.options.length}):`, "1");
+                   if(correctOptionIndexStr === null) return; // User cancelled
+                   correctOptionIndex = parseInt(correctOptionIndexStr) - 1;
+                } while (isNaN(correctOptionIndex) || correctOptionIndex < 0 || correctOptionIndex >= questionData.options.length);
+                questionData.correctAnswer = correctOptionIndex;
+            }
+            currentQuestions.push(questionData);
+            renderQuestionsInModal();
+        });
+
+        function renderQuestionsInModal() {
+            questionsContainer.innerHTML = '';
+            if (currentQuestions.length === 0) {
+                 questionsContainer.innerHTML = '<p class="text-sm text-gray-500 text-center py-3">لم تتم إضافة أسئلة بعد.</p>';
+                 return;
+            }
+            currentQuestions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'p-3 border rounded-md bg-gray-50 dark:bg-gray-700 shadow-sm';
+                let optionsHTML = '';
+                if (q.type === 'mcq') {
+                    optionsHTML = '<ul class="list-decimal list-inside mr-5 mt-2 text-sm space-y-1">';
+                    q.options.forEach((opt, i) => {
+                        optionsHTML += `<li class="${i === q.correctAnswer ? 'font-semibold text-green-700 dark:text-green-400' : 'text-gray-700 dark:text-gray-300'}">${opt}</li>`;
+                    });
+                    optionsHTML += '</ul>';
+                }
+                qDiv.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <p class="font-semibold flex-1 text-gray-800 dark:text-gray-200">${index + 1}. ${q.text} <span class="text-xs text-gray-400 dark:text-gray-500">(${q.type === 'mcq' ? 'اختيار من متعدد' : 'مقالي'})</span></p>
+                        <button type="button" onclick="removeQuestionFromModal('${q.id}')" class="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100 dark:hover:bg-red-700 transition-all focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                    ${optionsHTML}
+                `;
+                questionsContainer.appendChild(qDiv);
+            });
+        }
+        
+        window.removeQuestionFromModal = (questionId) => {
+            currentQuestions = currentQuestions.filter(q => q.id !== questionId);
+            renderQuestionsInModal();
+        };
+
+        examForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = examIdInput.value;
+            const title = examTitleInput.value;
+
+            if (currentQuestions.length === 0) {
+                showCustomAlert('يجب إضافة سؤال واحد على الأقل للاختبار.', 'خطأ', 'error');
+                return;
+            }
+
+            if (id) { 
+                const index = appState.exams.findIndex(ex => ex.id === id);
+                if (index > -1) appState.exams[index] = { ...appState.exams[index], title, questions: [...currentQuestions] };
+            } else { 
+                appState.exams.push({ id: Date.now().toString(), title, questions: [...currentQuestions] });
+            }
+            saveState();
+            renderExamsList();
+            renderStudentExamsList();
+            examModal.classList.add('hidden');
+            showCustomAlert(id ? 'تم تحديث الاختبار بنجاح.' : 'تم إنشاء الاختبار بنجاح.', 'نجاح', 'success');
+        });
+
+        window.editExam = (id) => {
+            const exam = appState.exams.find(ex => ex.id === id);
+            if (exam) {
+                examModalTitle.textContent = 'تعديل الاختبار';
+                examIdInput.value = exam.id;
+                examTitleInput.value = exam.title;
+                currentQuestions = JSON.parse(JSON.stringify(exam.questions)); 
+                renderQuestionsInModal();
+                examModal.classList.remove('hidden');
+            }
+        };
+        
+        window.deleteExam = (id) => {
+            showCustomConfirm('هل أنت متأكد من حذف هذا الاختبار؟ سيتم حذفه أيضاً من قائمة الطلاب.', 'تأكيد الحذف', () => {
+                appState.exams = appState.exams.filter(ex => ex.id !== id);
+                saveState();
+                renderExamsList();
+                renderStudentExamsList();
+                showCustomAlert('تم حذف الاختبار بنجاح.', 'نجاح', 'success');
+            });
+        };
+
+        window.previewExam = (examId) => {
+            const exam = appState.exams.find(ex => ex.id === examId);
+            if (!exam) return;
+            studentExamTitle.textContent = `معاينة: ${exam.title}`;
+            studentExamQuestionsContainer.innerHTML = ''; 
+            exam.questions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-700';
+                qDiv.innerHTML = `<p class="font-semibold text-gray-800 dark:text-gray-200">${index + 1}. ${q.text}</p>`;
+                if (q.type === 'mcq') {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'mt-2 space-y-1';
+                    q.options.forEach((opt, optIndex) => {
+                        optionsDiv.innerHTML += `
+                            <label class="flex items-center cursor-not-allowed text-gray-700 dark:text-gray-300">
+                                <input type="radio" name="preview_question_${q.id}" value="${optIndex}" class="ml-2 form-radio text-blue-500" disabled ${optIndex === q.correctAnswer ? 'checked' : ''}>
+                                <span class="${optIndex === q.correctAnswer ? 'text-green-600 dark:text-green-400 font-bold' : ''}">${opt}</span>
+                            </label>
+                        `;
+                    });
+                    qDiv.appendChild(optionsDiv);
+                } else if (q.type === 'essay') {
+                    qDiv.innerHTML += `<textarea name="preview_question_${q.id}" rows="3" class="w-full mt-2 p-2 border rounded bg-gray-100 dark:bg-gray-600 dark:border-gray-500" placeholder="مكان إجابة الطالب..." disabled></textarea>`;
+                }
+                studentExamQuestionsContainer.appendChild(qDiv);
+            });
+            studentExamViewModal.classList.remove('hidden');
+            submitStudentExamBtn.classList.add('hidden'); 
+            closeStudentExamModalBtn.textContent = "إغلاق المعاينة";
+        };
+
+        // --- Student Dashboard Logic ---
+        function renderStudentDashboard() {
+            if (!appState.currentUser || appState.currentUser.role !== 'student') {
+                navigateTo('loginPage'); 
+                return;
+            }
+            studentNameDisplay.textContent = appState.currentUser.name;
+            switchStudentSection('studentViewContentSection');
+            renderStudentContentList();
+            renderStudentExamsList();
+        }
+
+        studentNavLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                switchStudentSection(e.target.dataset.target);
+            });
+        });
+
+        function switchStudentSection(sectionId) {
+            studentSections.forEach(section => {
+                if (section.id === sectionId) section.classList.remove('hidden');
+                else section.classList.add('hidden');
+            });
+            studentNavLinks.forEach(link => {
+                link.classList.remove('student-nav-active');
+                if (link.dataset.target === sectionId) {
+                    link.classList.add('student-nav-active');
+                }
+            });
+        }
+
+        function renderStudentContentList() {
+            studentContentListDiv.innerHTML = '';
+            if (appState.content.length === 0) {
+                studentContentListDiv.innerHTML = '<p class="text-center col-span-full py-4 text-gray-500">لا يوجد محتوى تعليمي متاح حالياً.</p>';
+                return;
+            }
+            appState.content.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-xl transition-shadow';
+                let icon = '';
+                switch(item.type) {
+                    case 'pdf': icon = '📄'; break;
+                    case 'word': icon = '📝'; break;
+                    case 'video': icon = '🎬'; break;
+                    case 'audio': icon = '🎧'; break;
+                }
+                const linkContent = item.link.startsWith('http') ? `<a href="${item.link}" target="_blank" class="text-blue-500 hover:underline break-all">${item.link}</a>` : `<span class="break-all">${item.link}</span>`;
+
+                itemDiv.innerHTML = `
+                    <h4 class="text-lg font-semibold text-green-600 dark:text-green-400 mb-1">${icon} ${item.title}</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">النوع: ${item.type.toUpperCase()}</p>
+                    <p class="text-xs text-gray-400 dark:text-gray-500" title="${item.link}">الرابط: ${linkContent}</p>
+                `;
+                studentContentListDiv.appendChild(itemDiv);
+            });
+        }
+
+        function renderStudentExamsList() {
+            studentExamsListDiv.innerHTML = '';
+             if (appState.exams.length === 0) {
+                studentExamsListDiv.innerHTML = '<p class="text-center py-4 text-gray-500">لا توجد اختبارات متاحة حالياً.</p>';
+                return;
+            }
+            appState.exams.forEach(exam => {
+                const examCard = document.createElement('div');
+                examCard.className = 'bg-gray-50 dark:bg-gray-800 p-4 rounded-lg shadow hover:shadow-xl transition-shadow flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3';
+                examCard.innerHTML = `
+                    <div>
+                        <h4 class="text-lg font-semibold text-green-600 dark:text-green-400">${exam.title}</h4>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">عدد الأسئلة: ${exam.questions.length}</p>
+                    </div>
+                    <button onclick="startStudentExam('${exam.id}')" class="btn btn-success w-full sm:w-auto mt-2 sm:mt-0">بدء الاختبار</button>
+                `;
+                studentExamsListDiv.appendChild(examCard);
+            });
+        }
+        
+        window.startStudentExam = (examId) => {
+            const exam = appState.exams.find(ex => ex.id === examId);
+            if (!exam) return;
+            currentStudentExamId = examId;
+            studentExamTitle.textContent = exam.title;
+            studentExamQuestionsContainer.innerHTML = ''; 
+            exam.questions.forEach((q, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'mb-4 p-3 border rounded bg-gray-50 dark:bg-gray-700';
+                qDiv.innerHTML = `<p class="font-semibold mb-2 text-gray-800 dark:text-gray-200">${index + 1}. ${q.text}</p>`;
+                if (q.type === 'mcq') {
+                    const optionsDiv = document.createElement('div');
+                    optionsDiv.className = 'space-y-2';
+                    q.options.forEach((opt, optIndex) => {
+                        optionsDiv.innerHTML += `
+                            <label class="flex items-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer transition-colors text-gray-700 dark:text-gray-300">
+                                <input type="radio" name="question_${q.id}" value="${optIndex}" class="ml-3 form-radio text-blue-600 focus:ring-blue-500 dark:text-blue-400 dark:focus:ring-blue-400 dark:bg-gray-600 dark:border-gray-500">
+                                <span>${opt}</span>
+                            </label>
+                        `;
+                    });
+                    qDiv.appendChild(optionsDiv);
+                } else if (q.type === 'essay') {
+                    qDiv.innerHTML += `<textarea name="question_${q.id}" rows="4" class="w-full mt-2 p-2 border border-gray-300 rounded-md dark:bg-gray-600 dark:border-gray-500 focus:ring-blue-500 focus:border-blue-500 text-gray-800 dark:text-gray-200" placeholder="اكتب إجابتك هنا..."></textarea>`;
+                }
+                studentExamQuestionsContainer.appendChild(qDiv);
+            });
+            studentExamViewModal.classList.remove('hidden');
+            submitStudentExamBtn.classList.remove('hidden');
+            submitStudentExamBtn.textContent = "إرسال الإجابات";
+            closeStudentExamModalBtn.textContent = "إغلاق";
+            submitStudentExamBtn.onclick = handleStudentExamSubmit; 
+        };
+        
+        closeStudentExamModalBtn.addEventListener('click', () => {
+            studentExamViewModal.classList.add('hidden');
+        });
+
+        function handleStudentExamSubmit() {
+            if (!currentStudentExamId) return;
+            const exam = appState.exams.find(ex => ex.id === currentStudentExamId);
+            if (!exam) return;
+
+            let score = 0;
+            let totalMcq = 0;
+            const studentAnswers = {};
+
+            exam.questions.forEach(q => {
+                const formElements = studentExamQuestionsContainer.querySelectorAll(`[name="question_${q.id}"]`);
+                if (q.type === 'mcq') {
+                    totalMcq++;
+                    let answered = false;
+                    formElements.forEach(input => {
+                        if (input.checked) {
+                            studentAnswers[q.id] = parseInt(input.value);
+                            if (parseInt(input.value) === q.correctAnswer) {
+                                score++;
+                            }
+                            answered = true;
+                        }
+                    });
+                    if(!answered) studentAnswers[q.id] = null; // Mark as unanswered
+                } else if (q.type === 'essay') {
+                     if(formElements.length > 0) studentAnswers[q.id] = formElements[0].value;
+                     else studentAnswers[q.id] = ""; // No answer
+                }
+            });
+            
+            let resultMessage = `لقد أكملت الاختبار "${exam.title}".<br><br>`;
+            if (totalMcq > 0) {
+                 resultMessage += `نتيجتك في أسئلة الاختيار من متعدد: ${score} من ${totalMcq}.<br>`;
+            } else {
+                resultMessage += `لا توجد أسئلة اختيار من متعدد في هذا الاختبار.<br>`;
+            }
+            resultMessage += "إجابات الأسئلة المقالية (إذا وجدت) تم تسجيلها وستتم مراجعتها من قبل الأستاذ إن أمكن.";
+            
+            showCustomAlert(resultMessage, 'نتيجة الاختبار', 'info');
+            console.log(`Student ${appState.currentUser.username} Answers for exam "${exam.title}":`, studentAnswers);
+
+            studentExamViewModal.classList.add('hidden');
+            currentStudentExamId = null;
+        }
+
+        // --- Chatbot Logic ---
+        const chatResponses = {
+            "مرحبا": "أهلاً بك! كيف يمكنني مساعدتك اليوم؟ أنا روبوت الأستاذ محمد درويش.",
+            "اهلا": "أهلاً بك! كيف يمكنني مساعدتك اليوم؟",
+            "السلام عليكم": "وعليكم السلام ورحمة الله وبركاته! كيف أقدر أساعدك؟",
+            "كيف حالك": "أنا بخير، شكراً لسؤالك! ماذا عنك؟",
+            "ما هي المواد المتاحة": "يمكنك العثور على جميع المواد الدراسية في قسم 'عرض المحتوى' بعد تسجيل الدخول كطالب.",
+            "متى الاختبار": "مواعيد الاختبارات وأسماؤها معلنة في قسم 'الاختبارات المتاحة' للطلاب المسجلين.",
+            "شكرا": "على الرحب والسعة! هل هناك أي شيء آخر يمكنني المساعدة به؟",
+            "مع السلامة": "إلى اللقاء! بالتوفيق في دراستك.",
+            "default": "أعتذر، لم أفهم سؤالك جيداً. هل يمكنك إعادة صياغته أو طرح سؤال آخر؟ يمكنك أيضاً التواصل مع الأستاذ محمد درويش مباشرة عبر معلومات الاتصال الموجودة في ملفه الشخصي."
+        };
+
+        chatbotIcon.addEventListener('click', () => {
+            const isHidden = chatbotWindow.classList.toggle('hidden');
+            if (!isHidden) { 
+                if(chatbotMessagesDiv.children.length === 0 || 
+                   (chatbotMessagesDiv.children.length === 1 && chatbotMessagesDiv.lastChild.classList.contains('bot-message') && chatbotMessagesDiv.lastChild.textContent.includes("أهلاً بك! أنا مساعدك الآلي"))) {
+                    if(chatbotMessagesDiv.children.length === 1 && chatbotMessagesDiv.lastChild.textContent.includes("أهلاً بك! أنا مساعدك الآلي")) {
+                        chatbotMessagesDiv.innerHTML = '';
+                    }
+                    addMessageToChatbot("أهلاً بك! أنا مساعدك الآلي للأستاذ محمد درويش. كيف يمكنني خدمتك؟", 'bot');
+                }
+                chatbotUserInput.focus();
+            }
+        });
+
+        chatbotInputForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userInput = chatbotUserInput.value.trim();
+            if (userInput === '') return;
+
+            addMessageToChatbot(userInput, 'user');
+            chatbotUserInput.value = '';
+
+            setTimeout(() => {
+                let botResponse = chatResponses['default'];
+                let bestMatchLength = 0;
+                for (const keyword in chatResponses) {
+                    if (userInput.toLowerCase().includes(keyword.toLowerCase())) {
+                        if (keyword.length > bestMatchLength) {
+                           botResponse = chatResponses[keyword];
+                           bestMatchLength = keyword.length;
+                        }
+                    }
+                }
+                addMessageToChatbot(botResponse, 'bot');
+            }, 600);
+        });
+
+        function addMessageToChatbot(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
+            messageDiv.textContent = text;
+            messageDiv.classList.add('message-enter'); // Animation class
+            chatbotMessagesDiv.appendChild(messageDiv);
+            chatbotMessagesDiv.scrollTop = chatbotMessagesDiv.scrollHeight; 
+        }
+
+        // --- Initialization ---
+        function initializeApp() {
+            applyDarkMode(); 
+            loadProfilePic(); 
+            navigateTo('loginPage');
+        }
+
+        initializeApp();
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
 </body>
 </html>
+
